@@ -2,7 +2,6 @@ module StandardConstructions.NaturalsLessThanOrEqualOrdering where
 
 open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong ) 
 open import StandardConstructions.Naturals using ( Nat ; suc ; zero ) 
-open import StandardConstructions.Not using ( 🐷🛸 ) 
 open import StandardConstructions.Sum using ( Sum; injl; injr )
 
 data lteq : Nat -> Nat -> Set where 
