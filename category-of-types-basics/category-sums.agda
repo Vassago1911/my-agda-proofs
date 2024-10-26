@@ -1,4 +1,17 @@
-open import definition-equal using ( 🐷🛸; 🐓🥚; definition-equal ) 
+open import definition-equal using ( 🐓🥚; definition-equal ) 
+
+--- at first there was nothing
+data Empty : Set where 
+
+open import Level using (Level;_⊔_)
+
+record Irrelevant { a : Level } (A : Set a) : Set a where
+  constructor [_]
+  field .irrelevant : A
+
+--- universal flying pig which follows from any other contradiction
+🐷🛸 : Set
+🐷🛸 = Irrelevant Empty
 
 data Sum ( A B : Set ) : Set where 
     injl : A -> Sum A B 

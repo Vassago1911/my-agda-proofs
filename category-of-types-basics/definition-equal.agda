@@ -1,26 +1,3 @@
---- at first there was nothing
-data Empty : Set where 
-
---- then there was something, the (univalence axiom foreshadowing, in principle "a") one point type 
-data Point : Set where 
-    pt : Point 
-
-open import Level using (Level;_⊔_)
-
-record Irrelevant { a : Level } (A : Set a) : Set a where
-  constructor [_]
-  field .irrelevant : A
-
---- universal flying pig which follows from any other contradiction
-🐷🛸 : Set
-🐷🛸 = Irrelevant Empty
-
-not : Set -> Set 
-not A = ( A -> 🐷🛸 )
-
-map-not : { A B : Set } -> ( f : A -> B ) -> ( not B -> not A ) 
-map-not f notb a = notb ( f a )
-
 data definition-equal {a} { A : Set a } : A -> A -> Set a where 
     🐓🥚 : { x : A } -> definition-equal x x 
 
