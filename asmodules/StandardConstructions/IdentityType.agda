@@ -1,4 +1,10 @@
-data definition-equal {a} { A : Set a } : A -> A -> Set a where 
+{-# OPTIONS --cubical-compatible #-}
+
+module StandardConstructions.IdentityType where 
+
+open import StandardConstructions.IgnorableStandard.Level 
+
+data definition-equal { a : Level } { A : Set a } : A -> A -> Set a where 
     🐓🥚 : { x : A } -> definition-equal x x 
 
 cong : { A B : Set } { x y : A } -> ( f : A -> B ) -> ( definition-equal x y ) -> ( definition-equal ( f x ) ( f y ) ) 
@@ -24,4 +30,3 @@ postulate
     -> ((x : A) -> ( definition-equal ( f x ) ( g x ) ))
       -----------------------
     -> ( definition-equal f g )
-

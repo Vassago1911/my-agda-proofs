@@ -1,9 +1,11 @@
-open import definition-equal using ( 🐓🥚; definition-equal ) 
+{-# OPTIONS --cubical-compatible --safe #-}
+
+module StandardConstructions.Sum where 
 
 --- at first there was nothing
 data Empty : Set where 
 
-open import Level using (Level;_⊔_)
+open import StandardConstructions.IgnorableStandard.Level 
 
 record Irrelevant { a : Level } (A : Set a) : Set a where
   constructor [_]
@@ -33,12 +35,6 @@ sum-empty-l-t a = injr a
 
 sum-empty-r-t : { A : Set } -> A -> ( Sum A 🐷🛸 )
 sum-empty-r-t a = injl a
-
-lneutral-iso0 : { A : Set } -> ( a : A ) -> ( definition-equal ( sum-empty-l ( sum-empty-l-t a ) ) a ) 
-lneutral-iso0 a = 🐓🥚
-
-lneutral-iso1 : { A : Set } -> ( z : Sum 🐷🛸 A ) -> ( definition-equal ( sum-empty-l-t ( sum-empty-l z ) )  z ) 
-lneutral-iso1 (injr x) = 🐓🥚
 
 twist-sum : { A B : Set } -> ( Sum A B ) -> ( Sum B A ) 
 twist-sum (injl x) = injr x

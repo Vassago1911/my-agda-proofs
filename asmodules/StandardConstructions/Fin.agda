@@ -1,4 +1,6 @@
-open import natural-rules using ( Nat ; suc ) 
+module StandardConstructions.Fin where 
+
+open import StandardConstructions.Naturals using ( Nat ; suc ) 
 
 data Fin : Nat -> Set where 
     fzero : { k : Nat } -> Fin ( suc k ) 

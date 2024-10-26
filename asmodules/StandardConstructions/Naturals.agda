@@ -1,4 +1,6 @@
-open import definition-equal using ( definition-equal; 🐓🥚; cong; sym) 
+module StandardConstructions.Naturals where 
+
+open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong; sym) 
 
 data Nat : Set where 
     zero : Nat 
@@ -18,7 +20,7 @@ mul-def-reverse (suc n) m = 🐓🥚
 
 exp : Nat -> Nat -> Nat 
 exp zero zero = ( suc zero )
-exp zero m = zero 
+exp zero ( suc m ) = zero 
 exp (suc m) zero = ( suc zero ) 
 exp (suc m) ( suc k ) = ( mul (suc m) ( exp (suc m) k ) ) 
 
