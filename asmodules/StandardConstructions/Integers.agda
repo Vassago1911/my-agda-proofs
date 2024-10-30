@@ -5,7 +5,7 @@ open import StandardConstructions.IdentityType
 open import StandardConstructions.Maps 
     using ( circ ; id ) 
 open import StandardConstructions.Naturals 
-    using ( Nat; zero; suc; add; mul; l-add-zero; r-add-zero; add-comm; suc-skip-add; add-ass ) 
+    using ( Nat; zero; suc; add; mul; l-add-zero; r-add-zero; add-comm; suc-skip-add; add-ass; mul-comm; r-one-neutral; r-zero-absorbs ) 
 
 data Int : Set where 
     nat-int : Nat -> Int     
@@ -26,7 +26,9 @@ symm-nat-diff : ( n m : Nat ) -> ( definition-equal ( minus ( nat-diff-to-int n 
 symm-nat-diff zero zero = 🐓🥚
 symm-nat-diff zero (suc m) = 🐓🥚
 symm-nat-diff (suc n) zero = 🐓🥚
-symm-nat-diff (suc n) (suc m) = symm-nat-diff n m
+symm-nat-diff (suc n) (suc m) 
+    rewrite ( symm-nat-diff n m ) 
+    = 🐓🥚
 
 int-suc : Int -> Int 
 int-suc (nat-int x) = nat-int (suc x)
@@ -75,7 +77,8 @@ minus-pred-suc (neg-int zero) = 🐓🥚
 minus-pred-suc (neg-int (suc x)) = 🐓🥚 
 minus-pred-suc (nat-int (suc x)) 
     rewrite ( suc-int-suc ( suc x ) )
-    = minus-nat x
+    rewrite ( minus-nat x ) 
+    = 🐓🥚
 
 add-int : Int -> Int -> Int 
 add-int (nat-int x) (nat-int y) = nat-int (add x y)
@@ -84,8 +87,10 @@ add-int (neg-int x) (nat-int y) = nat-diff-to-int y (suc x)
 add-int (neg-int x) (neg-int y) = neg-int (suc (add x y))
 
 add-int-comm : ( n m : Int ) -> ( definition-equal ( add-int n m ) ( add-int m n ) ) 
-add-int-comm (nat-int x) (nat-int y) = cong nat-int ( add-comm {x} {y} ) 
-add-int-comm (neg-int x) (neg-int y) = cong neg-int (cong suc (add-comm {x} {y}))
+add-int-comm (nat-int x) (nat-int y) 
+    rewrite ( add-comm {y} {x} )     = 🐓🥚
+add-int-comm (neg-int x) (neg-int y) 
+    rewrite ( add-comm {y} {x} )     = 🐓🥚
 add-int-comm (nat-int x) (neg-int y) = 🐓🥚
 add-int-comm (neg-int x) (nat-int y) = 🐓🥚
 
@@ -94,8 +99,9 @@ zero-add-int (nat-int x) = 🐓🥚
 zero-add-int (neg-int x) = 🐓🥚
 
 add-int-zero : ( n : Int ) -> ( definition-equal ( add-int n ( nat-int zero ) ) n ) 
-add-int-zero (nat-int x) = cong nat-int (r-add-zero {x})
-add-int-zero (neg-int x) = 🐓🥚
+add-int-zero (nat-int x) 
+    rewrite ( r-add-zero {x} ) = 🐓🥚
+add-int-zero (neg-int x)       = 🐓🥚
 
 nat-diff-nat-add : ( a b r : Nat ) 
                 -> 
@@ -111,7 +117,9 @@ nat-diff-nat-add (suc a) (suc b) zero
     rewrite ( add-int-zero ( nat-diff-to-int a b ) ) 
     rewrite ( r-add-zero {a}) 
     = 🐓🥚
-nat-diff-nat-add (suc a) (suc b) (suc r) = nat-diff-nat-add a b (suc r)
+nat-diff-nat-add (suc a) (suc b) (suc r) 
+    rewrite (nat-diff-nat-add a b (suc r ) ) 
+    = 🐓🥚
 
 nat-diff-neg-add : ( a b r : Nat ) 
                 -> 
@@ -122,7 +130,9 @@ nat-diff-neg-add zero zero zero = 🐓🥚
 nat-diff-neg-add zero zero (suc r) = 🐓🥚
 nat-diff-neg-add zero (suc b) r = 🐓🥚
 nat-diff-neg-add (suc a) zero r = 🐓🥚
-nat-diff-neg-add (suc a) (suc b) r = nat-diff-neg-add a b r
+nat-diff-neg-add (suc a) (suc b) r 
+    rewrite ( nat-diff-neg-add a b r ) 
+    = 🐓🥚
 
 add-nat-diff : ( a b c : Nat ) 
         -> ( definition-equal 
@@ -209,3 +219,36 @@ add-int-ass (nat-int (suc x)) (nat-int (suc y)) (nat-int (suc z))
     rewrite ( suc-skip-add {x} {add y (suc z)} ) 
     rewrite ( add-ass {x} {y} {suc z} ) 
     = 🐓🥚
+
+add-has-inverses : ( a : Nat ) -> ( definition-equal ( add-int ( nat-int (suc a) ) ( neg-int a ) ) (nat-int zero) ) 
+add-has-inverses zero = 🐓🥚 
+add-has-inverses (suc a) 
+    rewrite ( add-has-inverses a ) 
+    = 🐓🥚
+
+data Pos : Set where 
+    p1 : Nat -> Pos 
+
+pos-as-nat : ( p : Pos ) -> Nat 
+pos-as-nat (p1 x) = suc x 
+
+data SymmInt : Set where 
+    pos : Pos -> SymmInt 
+    szero : SymmInt 
+    neg : Pos -> SymmInt 
+
+int-iso-1 : Int -> SymmInt 
+int-iso-1 (nat-int zero) = szero
+int-iso-1 (nat-int (suc x)) = pos (p1 x)
+int-iso-1 (neg-int x) = neg (p1 (suc x))
+
+int-iso-2 : SymmInt -> Int 
+int-iso-2 (pos (p1 x)) = nat-int (suc x)
+int-iso-2 szero = nat-int zero
+int-iso-2 (neg (p1 x)) = neg-int x
+
+really-iso-12 : ( n : Int ) -> ( definition-equal ( int-iso-2 ( int-iso-1 n ) ) n ) 
+really-iso-12 (nat-int zero) = 🐓🥚
+really-iso-12 (nat-int (suc x)) = 🐓🥚
+really-iso-12 (neg-int zero) = {!   !} 
+really-iso-12 (neg-int (suc x)) = {!   !}
