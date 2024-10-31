@@ -5,7 +5,8 @@ open import StandardConstructions.IdentityType
 open import StandardConstructions.Maps 
     using ( circ ; id ) 
 open import StandardConstructions.Naturals 
-    using ( Nat; zero; suc; add; mul; l-add-zero; r-add-zero; add-comm; suc-skip-add; add-ass; mul-comm; r-one-neutral; r-zero-absorbs ) 
+    using ( Nat; zero; suc; add; mul; l-add-zero; r-add-zero; add-comm; suc-skip-add; add-ass; mul-comm; r-one-neutral; r-zero-absorbs;
+            Pos; p1; one; pos-add; pos-mul; pos-add-ass; pos-add-comm; posmul-ass; posmul-comm; pos-mul-lunital; pos-mul-runital ) 
 
 data Int : Set where 
     nat-int : Nat -> Int     
@@ -226,29 +227,162 @@ add-has-inverses (suc a)
     rewrite ( add-has-inverses a ) 
     = 🐓🥚
 
-data Pos : Set where 
-    p1 : Nat -> Pos 
-
-pos-as-nat : ( p : Pos ) -> Nat 
-pos-as-nat (p1 x) = suc x 
-
 data SymmInt : Set where 
     pos : Pos -> SymmInt 
     szero : SymmInt 
     neg : Pos -> SymmInt 
 
-int-iso-1 : Int -> SymmInt 
-int-iso-1 (nat-int zero) = szero
-int-iso-1 (nat-int (suc x)) = pos (p1 x)
-int-iso-1 (neg-int x) = neg (p1 (suc x))
+symm-to-asymm-int : SymmInt -> Int 
+symm-to-asymm-int (pos (p1 x)) = nat-int (suc x)
+symm-to-asymm-int szero = nat-int zero
+symm-to-asymm-int (neg (p1 x)) = neg-int x
 
-int-iso-2 : SymmInt -> Int 
-int-iso-2 (pos (p1 x)) = nat-int (suc x)
-int-iso-2 szero = nat-int zero
-int-iso-2 (neg (p1 x)) = neg-int x
+asymm-to-symm-int : Int -> SymmInt 
+asymm-to-symm-int (nat-int zero) = szero
+asymm-to-symm-int (nat-int (suc x)) = pos (p1 x)
+asymm-to-symm-int (neg-int x) = neg (p1 x)
 
-really-iso-12 : ( n : Int ) -> ( definition-equal ( int-iso-2 ( int-iso-1 n ) ) n ) 
-really-iso-12 (nat-int zero) = 🐓🥚
-really-iso-12 (nat-int (suc x)) = 🐓🥚
-really-iso-12 (neg-int zero) = {!   !} 
-really-iso-12 (neg-int (suc x)) = {!   !}
+assi : ( s : SymmInt ) -> ( definition-equal ( asymm-to-symm-int (symm-to-asymm-int s ) ) s ) 
+assi (pos (p1 x)) = 🐓🥚
+assi szero = 🐓🥚
+assi (neg (p1 x)) = 🐓🥚
+
+sasi : ( a : Int ) -> ( definition-equal ( symm-to-asymm-int (asymm-to-symm-int a ) ) a ) 
+sasi (nat-int zero) = 🐓🥚
+sasi (nat-int (suc x)) = 🐓🥚
+sasi (neg-int x) = 🐓🥚
+
+symmint-mul : SymmInt -> SymmInt -> SymmInt 
+symmint-mul (pos x) szero = szero
+symmint-mul szero   b     = szero
+symmint-mul (neg x) szero = szero
+symmint-mul (pos x) (pos y) = pos (pos-mul x y)
+symmint-mul (pos x) (neg y) = neg (pos-mul x y)
+symmint-mul (neg x) (pos y) = neg (pos-mul x y)
+symmint-mul (neg x) (neg y) = pos (pos-mul x y)
+
+symmint-mul-zero-absorbs : ( a : SymmInt ) -> ( definition-equal ( symmint-mul a szero ) szero ) 
+symmint-mul-zero-absorbs (pos x) = 🐓🥚
+symmint-mul-zero-absorbs szero = 🐓🥚
+symmint-mul-zero-absorbs (neg x) = 🐓🥚
+
+symmint-mul-one-neutral : ( a : SymmInt ) -> ( definition-equal ( symmint-mul a ( pos (p1 zero) ) ) a ) 
+symmint-mul-one-neutral szero = 🐓🥚
+symmint-mul-one-neutral (pos (p1 x)) 
+    rewrite ( r-one-neutral {x} ) 
+    = 🐓🥚
+symmint-mul-one-neutral (neg (p1 x)) 
+    rewrite ( r-one-neutral {x} ) 
+    = 🐓🥚
+
+symmint-mul-comm : ( a b : SymmInt ) 
+            -> ( definition-equal 
+                    ( symmint-mul a b ) 
+                    ( symmint-mul b a ) ) 
+symmint-mul-comm (pos x) szero = 🐓🥚
+symmint-mul-comm szero (pos x) = 🐓🥚
+symmint-mul-comm szero szero = 🐓🥚
+symmint-mul-comm szero (neg x) = 🐓🥚
+symmint-mul-comm (neg x) szero = 🐓🥚
+symmint-mul-comm (pos x) (pos y) 
+    rewrite ( posmul-comm x y ) 
+    = 🐓🥚
+symmint-mul-comm (pos x) (neg y) 
+    rewrite ( posmul-comm x y ) 
+    = 🐓🥚
+symmint-mul-comm (neg x) (pos y) 
+    rewrite ( posmul-comm x y ) 
+    = 🐓🥚
+symmint-mul-comm (neg x) (neg y) 
+    rewrite ( posmul-comm x y ) 
+    = 🐓🥚
+
+symmint-mul-ass : ( a b c : SymmInt ) 
+            -> ( definition-equal 
+                    ( symmint-mul ( symmint-mul a b ) c ) 
+                    ( symmint-mul a ( symmint-mul b c ) ) ) 
+symmint-mul-ass szero b c = 🐓🥚
+symmint-mul-ass (pos x) szero (pos y) = 🐓🥚
+symmint-mul-ass (pos x) szero szero = 🐓🥚
+symmint-mul-ass (pos x) szero (neg y) = 🐓🥚
+symmint-mul-ass (pos x) (pos y) szero = 🐓🥚
+symmint-mul-ass (pos x) (neg y) szero = 🐓🥚
+symmint-mul-ass (neg x) szero c = 🐓🥚
+symmint-mul-ass (neg x) (pos y) szero = 🐓🥚
+symmint-mul-ass (neg x) (neg y) szero = 🐓🥚
+symmint-mul-ass (pos x) (pos y) (pos z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (pos x) (pos y) (neg z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (pos x) (neg y) (pos z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (pos x) (neg y) (neg z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (neg x) (pos y) (pos z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (neg x) (pos y) (neg z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (neg x) (neg y) (pos z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+symmint-mul-ass (neg x) (neg y) (neg z) 
+    rewrite ( posmul-ass x y z ) 
+    = 🐓🥚
+
+mulint : Int -> Int -> Int 
+mulint k l = symm-to-asymm-int ( symmint-mul ( asymm-to-symm-int k ) ( asymm-to-symm-int l ) )
+
+mulhom-sas : ( a b : SymmInt ) 
+    -> ( definition-equal 
+            ( mulint ( symm-to-asymm-int a ) ( symm-to-asymm-int b ) ) 
+            ( symm-to-asymm-int ( symmint-mul a b ) ) 
+            ) 
+mulhom-sas szero b = 🐓🥚
+mulhom-sas (pos (p1 x)) (pos (p1 y)) = 🐓🥚
+mulhom-sas (pos (p1 x)) szero = 🐓🥚
+mulhom-sas (pos (p1 x)) (neg (p1 y)) = 🐓🥚
+mulhom-sas (neg (p1 x)) (pos (p1 y)) = 🐓🥚
+mulhom-sas (neg (p1 x)) szero = 🐓🥚
+mulhom-sas (neg (p1 x)) (neg (p1 y)) = 🐓🥚
+
+mulint-comm : ( n m : Int ) 
+        -> ( definition-equal 
+                ( mulint n m ) 
+                ( mulint m n ) ) 
+mulint-comm n m 
+    rewrite ( sasi n ) 
+    rewrite ( sasi m ) 
+    rewrite ( symmint-mul-comm (asymm-to-symm-int n) (asymm-to-symm-int m ) ) 
+    = 🐓🥚
+
+mulint-ass : ( k l m : Int ) 
+        -> ( definition-equal 
+                ( mulint ( mulint k l ) m ) 
+                ( mulint k ( mulint l m ) ) ) 
+mulint-ass k l m 
+    rewrite ( sasi k )
+    rewrite ( assi (symmint-mul (asymm-to-symm-int l) (asymm-to-symm-int m)))
+    rewrite ( assi (symmint-mul (asymm-to-symm-int k) (asymm-to-symm-int l)))
+    rewrite ( symmint-mul-ass (asymm-to-symm-int k) (asymm-to-symm-int l) (asymm-to-symm-int m) )
+    = 🐓🥚
+
+oneint : Int 
+oneint = nat-int (suc zero)
+
+mulint-zero-absorbs : ( n : Int ) -> ( definition-equal ( mulint (nat-int zero) n ) (nat-int zero) ) 
+mulint-zero-absorbs n = 🐓🥚
+
+mulint-one-neutral : ( n : Int ) -> ( definition-equal ( mulint oneint n ) n ) 
+mulint-one-neutral n 
+    rewrite ( sasi n ) 
+    rewrite ( symmint-mul-comm (pos (p1 0)) (asymm-to-symm-int n))
+    rewrite ( symmint-mul-one-neutral (asymm-to-symm-int n) )
+    rewrite ( sasi n  )
+    = 🐓🥚    
+

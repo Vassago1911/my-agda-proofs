@@ -1,12 +1,24 @@
 module StandardConstructions.Naturals where 
 
-open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong; sym) 
+open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong; sym; trans) 
+open import StandardConstructions.Not using ( 🐷🛸 ) 
 
 data Nat : Set where 
     zero : Nat 
     suc : Nat -> Nat 
 
 {-#  BUILTIN NATURAL Nat  #-}
+
+suc-zero-is-pig : ( n : Nat ) -> ( definition-equal (suc n) zero ) -> 🐷🛸
+suc-zero-is-pig n = \ ()
+
+nat-suc-splitter : Nat -> Nat 
+nat-suc-splitter zero = zero
+nat-suc-splitter (suc n) = n
+
+suc-is-split : ( n : Nat ) -> ( definition-equal ( nat-suc-splitter ( suc n ) ) n ) 
+suc-is-split zero = 🐓🥚
+suc-is-split (suc n) = 🐓🥚
 
 add : Nat -> Nat -> Nat 
 add zero m = m
@@ -32,6 +44,15 @@ suc-not-eq {n = n} {m = m} 🐓🥚 = 🐓🥚
 suc-inj : { n m : Nat } -> ( definition-equal ( suc n ) ( suc m ) ) -> ( definition-equal n m ) 
 suc-inj {n = n} {m = m} 🐓🥚 = 🐓🥚
 
+add-c-inj : ( c : Nat ) -> ( n m : Nat ) 
+        -> ( definition-equal ( add c n ) ( add c m ) ) 
+        -> ( definition-equal n m ) 
+add-c-inj zero n m pred = pred
+add-c-inj (suc c) n m pred     
+    = ind-step
+    where step = suc-inj {add c n} {add c m} pred 
+          ind-step = add-c-inj c n m step 
+    
 l-add-zero : { n : Nat } -> ( definition-equal ( add zero n ) n ) 
 l-add-zero { n = n } = 🐓🥚
 
@@ -46,6 +67,9 @@ l-add-one-suc {n = suc n} = 🐓🥚
 r-add-one-suc : { n : Nat } -> ( definition-equal ( add n ( suc zero ) ) ( suc n ) ) 
 r-add-one-suc {n = zero} = 🐓🥚
 r-add-one-suc {n = suc n} = cong suc (r-add-one-suc {n})
+
+suc-add-def : ( n m : Nat ) -> ( definition-equal ( suc ( add n m ) ) ( add ( suc n ) m ) ) 
+suc-add-def n m = 🐓🥚
 
 suc-skip-add : { n m : Nat } -> ( definition-equal ( add n ( suc m ) ) ( add ( suc n ) m ) ) 
 suc-skip-add {n = zero} {m = m} = 🐓🥚
@@ -207,3 +231,163 @@ exponent-addition {a} {k} {suc l}
     rewrite ( exponent-addition { a } { k } { l } ) 
     rewrite ( add-comm {l} {k} )
     = 🐓🥚
+
+data Pos : Set where 
+    p1 : Nat -> Pos 
+
+pos-add : Pos -> Pos -> Pos 
+pos-add (p1 x) (p1 y) = p1 ( suc (add x y ) )
+
+pos-add-ass : ( x y z : Pos ) -> ( definition-equal ( pos-add ( pos-add x y ) z ) ( pos-add x ( pos-add y z ) ) ) 
+pos-add-ass (p1 x) (p1 y) (p1 z) 
+    rewrite ( suc-skip-add {x} {add y z} ) 
+    rewrite ( add-ass {x} {y} {z} ) 
+    = 🐓🥚
+
+pos-add-comm : ( x y : Pos ) -> ( definition-equal ( pos-add x y ) ( pos-add y x ) ) 
+pos-add-comm (p1 x) (p1 y) 
+    rewrite ( add-comm {x} {y} )
+    = 🐓🥚
+
+pos-add-one : ( x : Nat ) -> ( definition-equal ( pos-add (p1 zero) (p1 x) ) (p1 (suc x)) )
+pos-add-one x = 🐓🥚
+
+pos-one-add : ( x : Nat ) -> ( definition-equal ( pos-add (p1 x) (p1 zero) ) (p1 (suc x)) )
+pos-one-add zero = 🐓🥚
+pos-one-add (suc x) 
+    rewrite ( r-add-zero {x} ) 
+    = 🐓🥚
+
+pos-to-posnat : Pos -> Nat 
+pos-to-posnat (p1 x) = suc x
+
+nat-to-pos : Nat -> Pos 
+nat-to-pos zero = p1 zero 
+nat-to-pos (suc x) = p1 x 
+
+pnp : ( p : Pos ) -> ( definition-equal ( nat-to-pos ( pos-to-posnat p ) ) p ) 
+pnp (p1 x) = 🐓🥚
+
+npn : ( n : Nat ) -> ( definition-equal ( pos-to-posnat ( nat-to-pos (suc n ) ) ) (suc n ) ) 
+npn n = 🐓🥚
+
+pos-mul : Pos -> Pos -> Pos 
+pos-mul (p1 p) (p1 q) = nat-to-pos ( mul ( pos-to-posnat (p1 p) ) ( pos-to-posnat (p1 q) ) ) 
+
+pos-mul-lunital : ( p : Pos ) -> ( definition-equal (pos-mul (p1 zero) p ) p ) 
+pos-mul-lunital (p1 zero) = 🐓🥚 
+pos-mul-lunital (p1 (suc x)) 
+    rewrite ( r-add-zero {x} )
+    = 🐓🥚
+
+pos-mul-runital : ( p : Pos ) -> ( definition-equal (pos-mul p ( p1 zero ) ) p ) 
+pos-mul-runital (p1 zero) = 🐓🥚 
+pos-mul-runital (p1 (suc x)) 
+    rewrite ( r-one-neutral {x} ) 
+    = 🐓🥚
+
+p1-hom : ( p q : Pos ) 
+    -> ( definition-equal 
+            ( mul (pos-to-posnat p ) ( pos-to-posnat q ) ) 
+            ( pos-to-posnat ( pos-mul p q ) ) ) 
+p1-hom (p1 x) (p1 y) = 🐓🥚
+
+pos-to-pred-nat : Pos -> Nat 
+pos-to-pred-nat (p1 x) = x
+
+p1-inj : ( n m : Nat ) -> ( definition-equal ( p1 n ) ( p1 m ) ) -> ( definition-equal n m ) 
+p1-inj n m pred 
+    rewrite ( cong pos-to-pred-nat pred ) 
+    = 🐓🥚
+
+np-hom : ( n m : Nat ) 
+    -> ( definition-equal
+            ( pos-mul ( nat-to-pos (suc n) ) ( nat-to-pos (suc m) ) ) 
+            ( nat-to-pos ( mul (suc n) (suc m) ) ) ) 
+np-hom zero m = 🐓🥚 
+np-hom (suc n) m = 🐓🥚
+
+sympnp : ( p : Pos ) -> ( definition-equal p ( nat-to-pos ( pos-to-posnat p ) ) ) 
+sympnp p = sym ( pnp p )
+
+pnpmul : ( p q : Pos ) -> ( definition-equal ( pos-mul p q ) ( nat-to-pos ( pos-to-posnat ( pos-mul p q ) ) ) ) 
+pnpmul p q = sympnp ( pos-mul p q ) 
+
+pnpmul-to-natmul : ( p q : Pos ) -> ( definition-equal ( pos-mul p q ) ( nat-to-pos ( mul ( pos-to-posnat p ) ( pos-to-posnat q ) ) ) ) 
+pnpmul-to-natmul (p1 x) (p1 y) = 🐓🥚
+
+pnpmulass-to-natmul : ( p q r : Pos ) 
+            -> ( definition-equal 
+                    ( pos-mul ( pos-mul p q ) r ) 
+                    ( nat-to-pos
+                        ( mul 
+                            ( mul ( pos-to-posnat p ) 
+                                  ( pos-to-posnat q ) ) 
+                            ( pos-to-posnat r ) ) ) ) 
+pnpmulass-to-natmul (p1 x) (p1 y) (p1 z) = 🐓🥚
+
+pnpmulass-to-natmulrass : ( p q r : Pos ) 
+            -> ( definition-equal 
+                    ( pos-mul ( pos-mul p q ) r ) 
+                    ( nat-to-pos
+                        ( mul 
+                            ( pos-to-posnat p ) 
+                            ( mul ( pos-to-posnat q )  
+                                  ( pos-to-posnat r ) ) ) ) )
+pnpmulass-to-natmulrass p q r 
+    rewrite ( pnpmulass-to-natmul p q r ) 
+    rewrite ( mul-ass {pos-to-posnat p} {pos-to-posnat q} {pos-to-posnat r} ) 
+    = 🐓🥚
+
+pnpmul-to-pnprassmul : ( p q r : Pos ) 
+            -> ( definition-equal
+                    ( pos-mul p ( pos-mul q r ) ) 
+                    ( nat-to-pos
+                        ( mul 
+                            ( pos-to-posnat p ) 
+                            ( mul ( pos-to-posnat q )  
+                                  ( pos-to-posnat r ) ) ) ) )
+pnpmul-to-pnprassmul (p1 x) (p1 y) (p1 z) = 🐓🥚
+
+posmul-ass : ( p q r : Pos ) 
+        -> ( definition-equal 
+                ( pos-mul ( pos-mul p q ) r ) 
+                ( pos-mul p ( pos-mul q r ) ) )
+posmul-ass p q r 
+    rewrite ( pnpmul-to-pnprassmul p q r ) 
+    rewrite ( sym ( pnpmulass-to-natmulrass p q r ) )     
+    = 🐓🥚
+
+posmul-comm : ( p q : Pos ) 
+        -> ( definition-equal 
+                ( pos-mul p q ) 
+                ( pos-mul q p ) ) 
+posmul-comm p q 
+    rewrite ( pnpmul-to-natmul p q ) 
+    rewrite ( mul-comm {pos-to-posnat p} {pos-to-posnat q} ) 
+    rewrite ( sym ( pnpmul-to-natmul q p ) ) 
+    = 🐓🥚
+ 
+nat-add-mul-lemma : ( n m : Nat ) 
+    -> ( definition-equal 
+            ( suc ( add n ( mul m (suc n) ) )  )
+            ( mul ( suc m ) ( suc n ) ) ) 
+nat-add-mul-lemma n m = 🐓🥚            
+
+add-pumping : ( n m : Nat ) ->  ( definition-equal ( add n m ) zero ) -> ( definition-equal n zero ) 
+add-pumping zero m pred = 🐓🥚
+
+mul-suc-inj-at-zero : ( p : Nat ) -> ( n : Nat ) 
+            -> ( definition-equal ( mul (suc p) n ) zero ) -> ( definition-equal n zero ) 
+mul-suc-inj-at-zero zero n pred 
+    rewrite ( r-add-zero {n} ) 
+    = pred
+mul-suc-inj-at-zero (suc p) n pred = add-pumping n (add n (mul p n)) pred
+
+mul-sucs-not-zero : ( n m : Nat ) -> ( definition-equal ( mul ( suc n ) ( suc m ) ) zero ) -> 🐷🛸
+mul-sucs-not-zero zero zero ()
+mul-sucs-not-zero zero (suc m) ()  
+mul-sucs-not-zero (suc n) m () 
+
+one : Pos 
+one = p1 zero 
