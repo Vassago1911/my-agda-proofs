@@ -391,3 +391,91 @@ mul-sucs-not-zero (suc n) m ()
 
 one : Pos 
 one = p1 zero 
+
+posmul-one-neutral : ( p : Pos ) -> ( definition-equal ( pos-mul one p ) p ) 
+posmul-one-neutral (p1 x) 
+   rewrite ( r-add-zero {x} ) 
+   = 🐓🥚
+
+posmul-ldist-step : ( x : Nat ) -> ( p : Pos ) 
+   -> ( definition-equal
+         ( pos-mul ( p1 (suc x) ) p ) 
+         ( pos-add p ( pos-mul (p1 x) p ) ) ) 
+posmul-ldist-step zero (p1 x) 
+   rewrite ( suc-skip-add {x} {(add x zero)} ) 
+   = 🐓🥚
+posmul-ldist-step (suc x) (p1 y) 
+   rewrite ( suc-skip-add {y} {(add y (suc (add y (mul x (suc y)))))} ) 
+   = 🐓🥚         
+
+pos-mul-ldist : ( l p q : Pos ) 
+             -> ( definition-equal
+                    ( pos-add ( pos-mul l p ) ( pos-mul l q ) ) 
+                    ( pos-mul l ( pos-add p q ) ) ) 
+pos-mul-ldist (p1 zero) (p1 y) (p1 z) 
+   rewrite ( r-add-zero {y} ) 
+   rewrite ( r-add-zero {z} ) 
+   rewrite ( r-add-zero {add y z} ) 
+   = 🐓🥚 
+pos-mul-ldist (p1 (suc x)) (p1 zero) (p1 z) 
+   rewrite ( suc-skip-add {z} {(suc (add z (mul x (suc (suc z)))))} )
+   rewrite ( r-one-neutral {x} ) 
+   rewrite ( suc-skip-add {z} { add z (mul x (suc (suc z))) } ) 
+   rewrite ( suc-skip-add {z} { add z (mul x (suc z)) } ) 
+   rewrite ( suc-skip-add {x} { (add z (add z (mul x (suc z)))) } ) 
+   rewrite (sym ( add-ass {x} {z} {add z (mul x (suc z))} ) )
+   rewrite ( add-comm {x} {z} ) 
+   rewrite ( add-ass {z} {x} {add z (mul x (suc z))} )
+   rewrite (sym ( add-ass {x} {z} {mul x (suc z)} ) )
+   rewrite ( add-comm {x} {z} )
+   rewrite ( add-ass {z} {x} {mul x (suc z)} )    
+   rewrite ( mul-def-reverse1 x (suc z) ) 
+   = 🐓🥚
+pos-mul-ldist (p1 (suc x)) (p1 (suc y)) (p1 zero) 
+   rewrite ( r-add-zero {y} ) 
+   rewrite ( r-one-neutral {x} ) 
+   rewrite ( add-ass {y} {  (suc (suc (add y (mul x (suc (suc y)))))) } {suc x} )
+   rewrite ( suc-skip-add { add y (mul x (suc (suc y))) } { x } ) 
+   rewrite ( add-ass {y} {mul x (suc (suc y)) } {x} ) 
+   rewrite ( add-comm {mul x (suc (suc y) ) } {x} ) 
+   rewrite ( mul-def-reverse1 x (suc (suc y) ) ) 
+   = 🐓🥚
+pos-mul-ldist (p1 (suc x)) (p1 (suc y)) (p1 (suc z)) 
+   rewrite ( add-ass {y} {suc z} {mul (suc x) (suc (suc (suc (add y (suc z)))))} ) 
+   rewrite ( add-ass {y} {suc (suc (add y (mul x (suc (suc y))))) } {suc (add z (suc (suc (add z (mul x (suc (suc z)))))))} )
+   rewrite ( suc-skip-add {z} { suc (suc (add (add y (suc z)) (mul x (suc (suc (suc (add y (suc z)))))))) } ) 
+   rewrite ( suc-skip-add {add y (mul x (suc (suc y))) } { (add z (suc (suc (add z (mul x (suc (suc z))))))) } ) 
+   rewrite ( suc-skip-add {z} {(suc (add (add y (suc z)) (mul x (suc (suc (suc (add y (suc z)))))))) } )   
+   rewrite ( add-comm {(add y (mul x (suc (suc y))))} { add z (suc (suc (add z (mul x (suc (suc z)))))) } ) 
+   rewrite ( add-ass {z} {(suc (suc (add z (mul x (suc (suc z))))))} {(add y (mul x (suc (suc y))))} )
+   rewrite ( suc-skip-add {y} {z}) 
+   rewrite ( add-ass {z} {(mul x (suc (suc z)))} {(add y (mul x (suc (suc y))))} )
+   rewrite ( sym ( add-ass {mul x (suc (suc z))} {y} {mul x (suc (suc y))} ) )
+   rewrite ( add-comm {(mul x (suc (suc z)))} {y} )
+   rewrite ( add-ass {y} {(mul x (suc (suc z)))} {mul x (suc (suc y))} )
+   rewrite ( sym ( add-ass {z} {y} {(add (mul x (suc (suc z))) (mul x (suc (suc y))))} ) )
+   rewrite ( add-comm {z} {y} ) 
+   rewrite ( ldist-mul {x} {suc (suc z)} {suc (suc y)} )
+   rewrite ( suc-skip-add {z} {(suc y)} ) 
+   rewrite ( suc-skip-add {z} {y})
+   rewrite ( add-comm {z} {y} ) 
+   = 🐓🥚
+
+pos-mul-rdist : ( p q r : Pos ) 
+            -> ( definition-equal 
+                    ( pos-add ( pos-mul p r ) ( pos-mul q r ) ) 
+                    ( pos-mul ( pos-add p q ) r ) ) 
+pos-mul-rdist p q r 
+   rewrite ( posmul-comm p r ) 
+   rewrite ( posmul-comm q r ) 
+   rewrite ( posmul-comm (pos-add p q) r ) 
+   rewrite ( pos-mul-ldist r p q )    
+   = 🐓🥚
+
+pos-mul3 : Pos -> Pos -> Pos -> Pos 
+pos-mul3 p q r = ( pos-mul p ( pos-mul q r ) ) 
+
+pos-mul3-lass : ( p q r : Pos ) -> ( definition-equal ( pos-mul ( pos-mul p q ) r ) ( pos-mul3 p q r ) ) 
+pos-mul3-lass p q r 
+   rewrite ( posmul-ass p q r ) 
+   = 🐓🥚

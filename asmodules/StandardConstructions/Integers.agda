@@ -6,7 +6,7 @@ open import StandardConstructions.Maps
     using ( circ ; id ) 
 open import StandardConstructions.Naturals 
     using ( Nat; zero; suc; add; mul; l-add-zero; r-add-zero; add-comm; suc-skip-add; add-ass; mul-comm; r-one-neutral; r-zero-absorbs;
-            Pos; p1; one; pos-add; pos-mul; pos-add-ass; pos-add-comm; posmul-ass; posmul-comm; pos-mul-lunital; pos-mul-runital ) 
+            Pos; p1; one; pos-add; pos-mul; pos-mul3; pos-mul3-lass; pos-add-ass; pos-add-comm; posmul-ass; posmul-comm; pos-mul-lunital; pos-mul-runital ) 
 
 data Int : Set where 
     nat-int : Nat -> Int     
@@ -252,6 +252,42 @@ sasi (nat-int zero) = 🐓🥚
 sasi (nat-int (suc x)) = 🐓🥚
 sasi (neg-int x) = 🐓🥚
 
+symmint-add : SymmInt -> SymmInt -> SymmInt 
+symmint-add x y = asymm-to-symm-int ( add-int ( symm-to-asymm-int x ) ( symm-to-asymm-int y ) ) 
+
+symmint-add-def : ( x y : SymmInt ) 
+       -> ( definition-equal 
+               ( symmint-add x y ) 
+               ( asymm-to-symm-int ( add-int ( symm-to-asymm-int x ) ( symm-to-asymm-int y ) ) ) ) 
+symmint-add-def x y = 🐓🥚
+
+symmint-add-zero-neutral : ( x : SymmInt ) -> ( definition-equal ( symmint-add szero x ) x ) 
+symmint-add-zero-neutral szero = 🐓🥚
+symmint-add-zero-neutral (pos (p1 x)) = 🐓🥚
+symmint-add-zero-neutral (neg (p1 x)) = 🐓🥚
+
+symmint-add-comm : ( x y : SymmInt ) 
+        -> ( definition-equal 
+                ( symmint-add x y ) 
+                ( symmint-add y x ) ) 
+symmint-add-comm x y 
+   rewrite ( symmint-add-def x y ) 
+   rewrite ( symmint-add-def y x ) 
+   rewrite ( add-int-comm (symm-to-asymm-int y) (symm-to-asymm-int x) )
+   = 🐓🥚
+
+symmint-add-ass : ( x y z : SymmInt ) 
+            -> ( definition-equal 
+                    ( symmint-add ( symmint-add x y ) z ) 
+                    ( symmint-add x ( symmint-add y z ) ) ) 
+symmint-add-ass x y z 
+   rewrite ( symmint-add-def x y ) 
+   rewrite ( symmint-add-def y z ) 
+   rewrite ( sasi (add-int (symm-to-asymm-int x) (symm-to-asymm-int y)) )
+   rewrite ( sasi (add-int (symm-to-asymm-int y) (symm-to-asymm-int z)) ) 
+   rewrite ( add-int-ass (symm-to-asymm-int x) (symm-to-asymm-int y) (symm-to-asymm-int z) )
+   = 🐓🥚                    
+
 symmint-mul : SymmInt -> SymmInt -> SymmInt 
 symmint-mul (pos x) szero = szero
 symmint-mul szero   b     = szero
@@ -335,6 +371,96 @@ symmint-mul-ass (neg x) (neg y) (neg z)
     rewrite ( posmul-ass x y z ) 
     = 🐓🥚
 
+symmint-mul-negpos : ( x y : Pos ) 
+    -> ( definition-equal 
+         ( symmint-mul ( neg x ) ( pos y ) ) 
+         ( neg ( pos-mul x y ) ) ) 
+symmint-mul-negpos x y = 🐓🥚
+
+symmint-mul-posneg : ( x y : Pos ) 
+    -> ( definition-equal 
+          ( symmint-mul ( pos x ) ( neg y ) ) 
+          ( neg ( pos-mul x y ) ) ) 
+symmint-mul-posneg x y = 🐓🥚
+
+symmint-mul-pospos : ( x y : Pos ) 
+    -> ( definition-equal 
+           ( symmint-mul ( pos x ) ( pos y ) ) 
+           ( pos ( pos-mul x y ) ) ) 
+symmint-mul-pospos x y = 🐓🥚
+
+symmint-mul-negneg : ( x y : Pos ) 
+    -> ( definition-equal 
+           ( symmint-mul ( neg x ) ( neg y ) ) 
+           ( pos ( pos-mul x y ) ) ) 
+symmint-mul-negneg x y = 🐓🥚           
+
+symm-minusone : SymmInt 
+symm-minusone = neg ( p1 zero ) 
+
+symm-one : SymmInt 
+symm-one = pos ( p1 zero ) 
+
+minusone-square : ( definition-equal 
+                      ( symmint-mul symm-minusone symm-minusone )
+                      symm-one ) 
+minusone-square = 🐓🥚 
+
+sign-commute : ( k l : SymmInt ) -> 
+    ( definition-equal ( symmint-mul ( symmint-mul symm-minusone k ) l ) 
+                       ( symmint-mul symm-minusone ( symmint-mul k l ) ) ) 
+sign-commute k l 
+   rewrite ( symmint-mul-ass symm-minusone k l ) 
+   = 🐓🥚                       
+
+sign-commute-r : ( k l : SymmInt ) -> 
+   ( definition-equal ( symmint-mul k ( symmint-mul symm-minusone l ) ) 
+                      ( symmint-mul symm-minusone ( symmint-mul k l ) ))
+sign-commute-r k l 
+  rewrite ( sym ( symmint-mul-ass k symm-minusone l ) ) 
+  rewrite ( symmint-mul-comm k symm-minusone ) 
+  rewrite ( symmint-mul-ass (neg (p1 zero)) k l ) 
+  = 🐓🥚                      
+
+special-sign-commute : ( p : Pos ) -> ( k : SymmInt ) -> 
+   ( definition-equal ( symmint-mul ( symmint-mul symm-minusone (pos p) ) k ) 
+                      ( symmint-mul (neg p) k ) ) 
+special-sign-commute p k 
+   rewrite ( pos-mul-lunital p ) 
+   = 🐓🥚                      
+
+special-sign-commute-minus : ( p : Pos ) -> ( k : SymmInt ) -> 
+   ( definition-equal ( symmint-mul ( symmint-mul symm-minusone (neg p) ) k ) 
+                      ( symmint-mul (pos p) k ) ) 
+special-sign-commute-minus p k 
+   rewrite ( pos-mul-lunital p ) 
+   = 🐓🥚
+
+special-sign-commute-r : ( k : SymmInt ) -> ( p : Pos ) ->
+   ( definition-equal ( symmint-mul k ( symmint-mul symm-minusone (pos p) ) )
+                      ( symmint-mul k (neg p) ) ) 
+special-sign-commute-r k p 
+    rewrite (pos-mul-lunital p ) 
+    = 🐓🥚
+
+special-sign-commute-minus-r : ( k : SymmInt ) -> ( p : Pos ) -> 
+   ( definition-equal ( symmint-mul k ( symmint-mul symm-minusone (neg p) ) ) 
+                      ( symmint-mul k ( pos p ) ) ) 
+special-sign-commute-minus-r k p 
+    rewrite (pos-mul-lunital p ) 
+    = 🐓🥚                                                
+
+pos-add-hom : ( p q : Pos ) 
+   -> ( definition-equal 
+           ( symmint-add ( pos p ) ( pos q ) ) 
+           ( pos ( pos-add p q ) ) ) 
+pos-add-hom (p1 x) (p1 y) 
+  rewrite ( symmint-add-def (pos (p1 x)) (pos (p1 y)) ) 
+  rewrite ( suc-skip-add {x} {y} ) 
+  = 🐓🥚           
+          
+
+
 mulint : Int -> Int -> Int 
 mulint k l = symm-to-asymm-int ( symmint-mul ( asymm-to-symm-int k ) ( asymm-to-symm-int l ) )
 
@@ -381,8 +507,7 @@ mulint-zero-absorbs n = 🐓🥚
 mulint-one-neutral : ( n : Int ) -> ( definition-equal ( mulint oneint n ) n ) 
 mulint-one-neutral n 
     rewrite ( sasi n ) 
-    rewrite ( symmint-mul-comm (pos (p1 0)) (asymm-to-symm-int n))
+    rewrite ( symmint-mul-comm (pos (p1 zero)) (asymm-to-symm-int n))
     rewrite ( symmint-mul-one-neutral (asymm-to-symm-int n) )
     rewrite ( sasi n  )
     = 🐓🥚    
-
