@@ -284,6 +284,11 @@ sasi (neg-int x) = 🐓🥚
 symmint-add : SymmInt -> SymmInt -> SymmInt
 symmint-add x y = asymm-to-symm-int ( add-int ( symm-to-asymm-int x ) ( symm-to-asymm-int y ) )
 
+symmint-add-posneg : ( x y : Nat ) -> ( definition-equal 
+                                            ( symmint-add (neg (p1 (suc x) ) ) ( pos ( p1 ( suc y ) ) ) ) 
+                                            ( symmint-add (neg (p1 x) ) ( pos ( p1 y ) ) ) ) 
+symmint-add-posneg x y = 🐓🥚                                            
+
 symmint-pos-add-hom : ( p q : Pos ) -> ( definition-equal ( symmint-add ( pos p ) ( pos q ) )
                                                           ( pos ( pos-add p q ) ) )
 symmint-pos-add-hom (p1 zero) (p1 x₁) = 🐓🥚
@@ -295,7 +300,6 @@ symmint-pos-add-hom (p1 (suc x)) (p1 (suc y))
   rewrite ( symmint-succ-def-pos x )
   rewrite ( suc-skip-add { x } { suc y } )
   = 🐓🥚
-
 
 symmint-add-def : ( x y : SymmInt )
        -> ( definition-equal
@@ -317,6 +321,32 @@ symmint-add-comm x y
    rewrite ( symmint-add-def y x )
    rewrite ( add-int-comm (symm-to-asymm-int y) (symm-to-asymm-int x) )
    = 🐓🥚
+
+sytoasy-hom : ( p q : SymmInt ) 
+         -> ( definition-equal 
+                ( add-int ( symm-to-asymm-int p ) ( symm-to-asymm-int q ) ) 
+                ( symm-to-asymm-int ( symmint-add p q ) ) ) 
+sytoasy-hom szero szero = 🐓🥚
+sytoasy-hom (pos (p1 x)) (pos (p1 x₁)) = 🐓🥚
+sytoasy-hom (pos (p1 x)) szero = 🐓🥚
+sytoasy-hom (pos (p1 zero)) (neg (p1 zero)) = 🐓🥚
+sytoasy-hom (pos (p1 zero)) (neg (p1 (suc z))) = 🐓🥚
+sytoasy-hom (pos (p1 (suc x))) (neg (p1 zero)) = 🐓🥚
+sytoasy-hom szero (pos (p1 x)) = 🐓🥚
+sytoasy-hom szero (neg (p1 x)) = 🐓🥚
+sytoasy-hom (neg (p1 x)) szero = 🐓🥚
+sytoasy-hom (neg (p1 x)) (neg (p1 z)) = 🐓🥚                
+sytoasy-hom (neg (p1 zero)) (pos (p1 zero)) = 🐓🥚
+sytoasy-hom (neg (p1 zero)) (pos (p1 (suc z))) = 🐓🥚
+sytoasy-hom (neg (p1 (suc x))) (pos (p1 zero)) = 🐓🥚
+sytoasy-hom (pos (p1 (suc x))) (neg (p1 (suc z))) 
+    rewrite ( symmint-add-comm (pos (p1 (suc x))) (neg (p1 (suc z))) ) 
+    rewrite ( sasi (nat-diff-to-int x z) ) 
+    = 🐓🥚
+sytoasy-hom (neg (p1 (suc x))) (pos (p1 (suc z))) 
+    rewrite ( symmint-add-comm (neg (p1 (suc x))) (pos (p1 (suc z)) ) ) 
+    rewrite ( sasi (nat-diff-to-int z x ) ) 
+    = 🐓🥚
 
 symmint-add-ass : ( x y z : SymmInt )
             -> ( definition-equal
@@ -529,6 +559,9 @@ symmint-abs (pos x) = pos x
 symmint-abs szero = szero
 symmint-abs (neg x) = pos x
 
+symmint-abs-zero : ( definition-equal ( symmint-abs szero ) szero ) 
+symmint-abs-zero = 🐓🥚
+
 symmint-decomp : ( p : SymmInt ) -> ( definition-equal ( symmint-mul ( symmint-sign p ) ( symmint-abs p ) ) p )
 symmint-decomp (pos x)
    rewrite ( pos-mul-lunital x )
@@ -694,3 +727,52 @@ symmint-abs-ldist (neg x) (neg y) (neg z)
     rewrite ( pos-mul-ldist x y z ) 
     = 🐓🥚
 
+symmint-minusone-ldist : ( p q : SymmInt )
+        -> ( definition-equal
+                ( symmint-add ( symmint-mul symm-minusone ( symmint-abs p ) )
+                              ( symmint-mul symm-minusone ( symmint-abs q ) ) )
+                ( symmint-mul symm-minusone 
+                              (symmint-add ( symmint-abs p ) ( symmint-abs q ) ) ) 
+           ) 
+symmint-minusone-ldist szero q 
+    rewrite symmint-abs-zero
+    rewrite ( add-int-comm (nat-int zero) (symm-to-asymm-int (symmint-mul (neg (p1 0)) (symmint-abs q))) )
+    rewrite ( add-int-comm (nat-int zero) (symm-to-asymm-int (symmint-abs q)) )  
+    rewrite ( add-int-zero (symm-to-asymm-int (symmint-mul (neg (p1 0)) (symmint-abs q))) )
+    rewrite ( add-int-zero (symm-to-asymm-int (symmint-abs q)) )  
+    rewrite ( assi (symmint-mul (neg (p1 0)) (symmint-abs q)) )
+    rewrite ( assi (symmint-abs q) ) 
+    = 🐓🥚
+symmint-minusone-ldist q szero 
+    rewrite (symmint-add-zero-neutral (symmint-mul symm-minusone (symmint-abs q)) ) 
+    rewrite (symmint-add-zero-neutral (symmint-abs q) ) 
+    rewrite ( add-int-zero (symm-to-asymm-int (symmint-abs q)) )
+    rewrite ( add-int-zero (symm-to-asymm-int (symmint-mul (neg (p1 0)) (symmint-abs q))) )
+    rewrite ( assi (symmint-mul (neg (p1 0)) (symmint-abs q)) )
+    rewrite ( assi (symmint-abs q) ) 
+    = 🐓🥚 
+symmint-minusone-ldist (pos (p1 y)) (pos (p1 z)) 
+    rewrite ( r-add-zero {y} ) 
+    rewrite ( r-add-zero {z} ) 
+    rewrite ( r-add-zero {add y (suc z)} ) 
+    rewrite ( suc-skip-add {y} {z} ) 
+    = 🐓🥚
+symmint-minusone-ldist (pos (p1 y)) (neg (p1 z)) 
+    rewrite ( r-add-zero {y} )
+    rewrite ( r-add-zero {z} ) 
+    rewrite ( r-add-zero {add y (suc z)} ) 
+    rewrite ( suc-skip-add {y} {z} ) 
+    = 🐓🥚
+symmint-minusone-ldist (neg (p1 y)) (pos (p1 z)) 
+    rewrite ( r-add-zero {y} )
+    rewrite ( r-add-zero {z} ) 
+    rewrite ( r-add-zero {add y (suc z)} ) 
+    rewrite ( suc-skip-add {y} {z} ) 
+    = 🐓🥚
+symmint-minusone-ldist (neg (p1 y)) (neg (p1 z))
+    rewrite ( r-add-zero {y} )
+    rewrite ( r-add-zero {z} ) 
+    rewrite ( r-add-zero {add y (suc z)} ) 
+    rewrite ( suc-skip-add {y} {z} ) 
+    = 🐓🥚
+ 
