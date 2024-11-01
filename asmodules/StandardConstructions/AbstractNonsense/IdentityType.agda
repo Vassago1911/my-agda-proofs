@@ -2,7 +2,7 @@
 
 module StandardConstructions.AbstractNonsense.IdentityType where 
 
-open import StandardConstructions.IgnorableStandard.Level 
+open import StandardConstructions.AbstractNonsense.IgnorableStandard.Level 
 
 data definition-equal { a : Level } { A : Set a } : A -> A -> Set a where 
     🐓🥚 : { x : A } -> definition-equal x x 

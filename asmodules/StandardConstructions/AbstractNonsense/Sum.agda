@@ -5,7 +5,7 @@ module StandardConstructions.AbstractNonsense.Sum where
 --- at first there was nothing
 data Empty : Set where 
 
-open import StandardConstructions.IgnorableStandard.Level 
+open import StandardConstructions.AbstractNonsense.IgnorableStandard.Level 
 
 record Irrelevant { a : Level } (A : Set a) : Set a where
   constructor [_]

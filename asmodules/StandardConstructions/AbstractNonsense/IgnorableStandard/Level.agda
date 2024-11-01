@@ -6,7 +6,7 @@
 
 {-# OPTIONS --cubical-compatible --safe #-}
 
-module StandardConstructions.IgnorableStandard.Level where
+module StandardConstructions.AbstractNonsense.IgnorableStandard.Level where
 
 -- Levels.
 
