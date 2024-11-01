@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical-compatible #-}
 
-module StandardConstructions.IdentityType where 
+module StandardConstructions.AbstractNonsense.IdentityType where 
 
 open import StandardConstructions.IgnorableStandard.Level 
 
@@ -9,6 +9,12 @@ data definition-equal { a : Level } { A : Set a } : A -> A -> Set a where
 
 cong : { A B : Set } { x y : A } -> ( f : A -> B ) -> ( definition-equal x y ) -> ( definition-equal ( f x ) ( f y ) ) 
 cong f 🐓🥚 = 🐓🥚 
+
+typey-cong : { a b : Level } { A : Set a } { B : A -> Set b } 
+      -> ( x y : A ) 
+      -> ( definition-equal x y ) 
+      -> ( definition-equal (B x) (B y) )
+typey-cong x y 🐓🥚 = 🐓🥚
 
 refl : { A : Set } { x : A } -> ( definition-equal x x ) 
 refl = 🐓🥚

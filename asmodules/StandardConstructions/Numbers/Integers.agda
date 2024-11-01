@@ -1,10 +1,10 @@
-module StandardConstructions.Integers2 where
+module StandardConstructions.Numbers.Integers where
 
-open import StandardConstructions.IdentityType
+open import StandardConstructions.AbstractNonsense.IdentityType
     using ( definition-equal; 🐓🥚; cong; sym; trans; extensionality)
-open import StandardConstructions.Maps
+open import StandardConstructions.AbstractNonsense.Maps
     using ( circ ; id )
-open import StandardConstructions.Naturals
+open import StandardConstructions.Numbers.Naturals
     using ( Nat; zero; suc; add; mul; r-add-zero; add-comm; suc-skip-add; add-ass; r-one-neutral; 
             mul-def-reverse; mul-def-reverse1; mul-comm; r-zero-absorbs; nat-suc-splitter; mul-ass;
             ldist-mul; rdist-mul )
@@ -241,6 +241,9 @@ int-add-inverse-is-inverse (nat-int zero) = 🐓🥚
 int-add-inverse-is-inverse (nat-int (suc x)) = nat-diff-eq-is-zero x
 int-add-inverse-is-inverse (neg-int x) = nat-diff-eq-is-zero x
 
+int-add-inverse-zero : ( definition-equal ( int-add-inverse (nat-int zero ) ) ( nat-int zero ) )
+int-add-inverse-zero = 🐓🥚
+
 add-inverse-unique : ( p q : Int ) 
             -> ( definition-equal ( int-add p q ) ( nat-int zero ) ) 
             -> ( definition-equal q ( int-add-inverse p ) ) 
@@ -472,3 +475,4 @@ int-mul-rdist r p q
     rewrite ( int-mul-comm (int-add p q) r ) 
     rewrite ( int-mul-ldist r p q ) 
     = 🐓🥚                                                    
+

@@ -1,4 +1,4 @@
-module StandardConstructions.Maps where 
+module StandardConstructions.AbstractNonsense.Maps where 
 
 id : { A : Set } -> ( A -> A ) 
 id a = a 

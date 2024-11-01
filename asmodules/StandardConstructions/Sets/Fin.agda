@@ -1,6 +1,6 @@
-module StandardConstructions.Fin where 
+module StandardConstructions.Sets.Fin where 
 
-open import StandardConstructions.Naturals using ( Nat ; suc ) 
+open import StandardConstructions.Numbers.Naturals using ( Nat ; suc ) 
 
 data Fin : Nat -> Set where 
     fzero : { k : Nat } -> Fin ( suc k ) 

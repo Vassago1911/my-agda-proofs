@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical-compatible --safe #-}
 
-module StandardConstructions.Product where 
+module StandardConstructions.AbstractNonsense.Product where 
 
 --- then there was something
 data Point : Set where 

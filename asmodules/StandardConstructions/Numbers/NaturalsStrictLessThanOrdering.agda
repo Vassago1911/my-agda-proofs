@@ -1,9 +1,9 @@
-module StandardConstructions.NaturalsStrictLessThanOrdering where 
+module StandardConstructions.Numbers.NaturalsStrictLessThanOrdering where 
 
-open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong ) 
-open import StandardConstructions.Naturals using ( Nat ; suc ; zero ) 
-open import StandardConstructions.Not using ( 🐷🛸 ) 
-open import StandardConstructions.Sum using ( Sum; injl; injr )
+open import StandardConstructions.AbstractNonsense.IdentityType using ( definition-equal; 🐓🥚; cong ) 
+open import StandardConstructions.AbstractNonsense.Not using ( 🐷🛸 ) 
+open import StandardConstructions.AbstractNonsense.Sum using ( Sum; injl; injr )
+open import StandardConstructions.Numbers.Naturals using ( Nat ; suc ; zero ) 
 
 data less-than : Nat -> Nat -> Set where 
     gt-zero : { k : Nat } -> ( less-than zero (suc k) ) 

@@ -1,8 +1,8 @@
-module StandardConstructions.NaturalsLessThanOrEqualOrdering where 
+module StandardConstructions.Numbers.NaturalsLessThanOrEqualOrdering where 
 
-open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong ) 
-open import StandardConstructions.Naturals using ( Nat ; suc ; zero ) 
-open import StandardConstructions.Sum using ( Sum; injl; injr )
+open import StandardConstructions.AbstractNonsense.IdentityType using ( definition-equal; 🐓🥚; cong ) 
+open import StandardConstructions.AbstractNonsense.Sum using ( Sum; injl; injr )
+open import StandardConstructions.Numbers.Naturals using ( Nat ; suc ; zero ) 
 
 data lteq : Nat -> Nat -> Set where 
     gteq-zero : { k : Nat } -> ( lteq zero k ) 

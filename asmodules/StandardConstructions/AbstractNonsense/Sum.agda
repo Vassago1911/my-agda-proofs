@@ -1,6 +1,6 @@
 {-# OPTIONS --cubical-compatible --safe #-}
 
-module StandardConstructions.Sum where 
+module StandardConstructions.AbstractNonsense.Sum where 
 
 --- at first there was nothing
 data Empty : Set where 

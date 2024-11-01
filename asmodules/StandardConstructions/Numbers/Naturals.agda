@@ -1,7 +1,7 @@
-module StandardConstructions.Naturals where 
+module StandardConstructions.Numbers.Naturals where 
 
-open import StandardConstructions.IdentityType using ( definition-equal; 🐓🥚; cong; sym; trans) 
-open import StandardConstructions.Not using ( 🐷🛸 ) 
+open import StandardConstructions.AbstractNonsense.IdentityType using ( definition-equal; 🐓🥚; cong; sym; trans) 
+open import StandardConstructions.AbstractNonsense.Not using ( 🐷🛸 ) 
 
 data Nat : Set where 
     zero : Nat 
@@ -377,6 +377,11 @@ nat-add-mul-lemma n m = 🐓🥚
 add-pumping : ( n m : Nat ) ->  ( definition-equal ( add n m ) zero ) -> ( definition-equal n zero ) 
 add-pumping zero m pred = 🐓🥚
 
+nat-mul-no-zero-div : ( n m : Nat ) 
+        -> ( definition-equal ( mul ( suc n ) m ) zero ) 
+        -> ( definition-equal m zero ) 
+nat-mul-no-zero-div n m pred = add-pumping m (mul n m) pred        
+                  
 mul-suc-inj-at-zero : ( p : Nat ) -> ( n : Nat ) 
             -> ( definition-equal ( mul (suc p) n ) zero ) -> ( definition-equal n zero ) 
 mul-suc-inj-at-zero zero n pred 
