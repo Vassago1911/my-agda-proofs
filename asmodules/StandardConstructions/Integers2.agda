@@ -5,7 +5,9 @@ open import StandardConstructions.IdentityType
 open import StandardConstructions.Maps
     using ( circ ; id )
 open import StandardConstructions.Naturals
-    using ( Nat; zero; suc; add; mul; r-add-zero; add-comm; suc-skip-add; add-ass; r-one-neutral; mul-def-reverse; mul-comm; r-zero-absorbs; nat-suc-splitter )
+    using ( Nat; zero; suc; add; mul; r-add-zero; add-comm; suc-skip-add; add-ass; r-one-neutral; 
+            mul-def-reverse; mul-def-reverse1; mul-comm; r-zero-absorbs; nat-suc-splitter; mul-ass;
+            ldist-mul; rdist-mul )
 
 data Int : Set where
     nat-int : Nat -> Int
@@ -237,9 +239,98 @@ add-inverse-unique (nat-int zero) q = add-zero-inverse-unique q
 add-inverse-unique (nat-int (suc x)) q = add-nat-inverse-unique x q
 add-inverse-unique (neg-int x) q = add-neg-inverse-unique x q            
 
+int-add-inverse-square-id : ( n : Int ) -> ( definition-equal ( int-add-inverse ( int-add-inverse n ) ) n ) 
+int-add-inverse-square-id (nat-int zero) = 🐓🥚
+int-add-inverse-square-id (nat-int (suc x)) = 🐓🥚
+int-add-inverse-square-id (neg-int x) = 🐓🥚
+
 int-add-reduction : ( a b : Nat ) -> ( definition-equal ( int-add ( nat-int (suc a) ) ( neg-int (suc b ) ) )
                                                         ( int-add ( nat-int a ) ( neg-int b ) ) )
 int-add-reduction a b = 🐓🥚
 
 int-mul : Int -> Int -> Int
-int-mul a b = {!   !}
+int-mul (nat-int x) (nat-int y) = nat-int ( mul x y )
+int-mul (nat-int x) (neg-int y) = int-add-inverse ( nat-int ( mul x (suc y) ) )
+int-mul (neg-int x) (nat-int y) = int-add-inverse ( nat-int ( mul (suc x) y ) )  
+int-mul (neg-int x) (neg-int y) = int-add-inverse ( int-add-inverse ( nat-int ( mul (suc x) (suc y) ) ) )
+
+int-mul-comm : ( n m : Int ) -> ( definition-equal ( int-mul n m ) ( int-mul m n ) ) 
+int-mul-comm (nat-int x) (nat-int y) 
+    rewrite ( mul-comm {y} {x} ) 
+    = 🐓🥚
+int-mul-comm (nat-int x) (neg-int y) 
+    rewrite ( mul-def-reverse1 x y )
+    rewrite ( mul-comm {y} {x} ) 
+    = 🐓🥚
+int-mul-comm (neg-int x) (nat-int y) 
+    rewrite ( mul-def-reverse1 y x ) 
+    rewrite ( mul-comm {y} {x} ) 
+    = 🐓🥚
+int-mul-comm (neg-int x) (neg-int y) 
+    rewrite ( mul-def-reverse1 x y ) 
+    rewrite ( mul-def-reverse1 y x ) 
+    rewrite ( mul-comm {y} {x} ) 
+    rewrite ( sym ( add-ass {y} {x} {mul x y} ) ) 
+    rewrite ( sym ( add-ass {x} {y} {mul x y} ) ) 
+    rewrite ( add-comm {y} {x} ) 
+    = 🐓🥚
+
+int-mul-pull-inv-from-left : ( p q : Int ) -> ( definition-equal ( int-mul ( int-add-inverse p ) q ) ( int-add-inverse ( int-mul p q ) ) ) 
+int-mul-pull-inv-from-left (nat-int zero) (nat-int y) = 🐓🥚
+int-mul-pull-inv-from-left (nat-int (suc x)) (nat-int y) = 🐓🥚
+int-mul-pull-inv-from-left (nat-int zero) (neg-int y) = 🐓🥚
+int-mul-pull-inv-from-left (nat-int (suc x)) (neg-int y) = 🐓🥚
+int-mul-pull-inv-from-left (neg-int zero) (nat-int zero) = 🐓🥚
+int-mul-pull-inv-from-left (neg-int x) (nat-int (suc y)) = 🐓🥚
+int-mul-pull-inv-from-left (neg-int x) (neg-int y) = 🐓🥚
+int-mul-pull-inv-from-left (neg-int (suc x)) (nat-int zero) 
+    rewrite ( r-zero-absorbs {x} ) 
+    rewrite ( int-add-inverse-square-id (nat-int x) ) 
+    = 🐓🥚
+
+int-mul-pull-inv-from-right : ( p q : Int ) -> ( definition-equal ( int-mul p ( int-add-inverse q ) ) ( int-add-inverse ( int-mul p q ) ) ) 
+int-mul-pull-inv-from-right p q 
+    rewrite ( int-mul-comm p (int-add-inverse q) ) 
+    rewrite ( int-mul-pull-inv-from-left q p ) 
+    rewrite ( int-mul-comm q p ) 
+    = 🐓🥚 
+
+int-mul-ass : ( p q r : Int ) -> ( definition-equal ( int-mul ( int-mul p q ) r ) ( int-mul p ( int-mul q r ) ) ) 
+int-mul-ass (nat-int x) (nat-int y) (nat-int z) = cong nat-int (mul-ass {x} {y} {z})
+int-mul-ass (nat-int x) (nat-int y) (neg-int z) 
+    rewrite ( int-mul-pull-inv-from-right (nat-int x) (nat-int (mul y (suc z))) )
+    rewrite ( mul-ass {x} {y} {suc z} ) 
+    = 🐓🥚
+int-mul-ass (nat-int x) (neg-int y) (nat-int z) 
+    rewrite ( int-mul-pull-inv-from-right (nat-int x) (nat-int (add z (mul y z))) )
+    rewrite ( int-mul-pull-inv-from-left (nat-int (mul x (suc y))) (nat-int z) )
+    rewrite ( mul-ass {x} {suc y} {z} )     
+    = 🐓🥚
+int-mul-ass (nat-int x) (neg-int y) (neg-int z) 
+    rewrite ( int-mul-pull-inv-from-left  (nat-int (mul x (suc y))) (neg-int z) )
+    rewrite ( int-add-inverse-square-id (nat-int (mul (mul x (suc y)) (suc z))) )
+    rewrite ( mul-ass {x} {suc y} {suc z} ) 
+    = 🐓🥚
+int-mul-ass (neg-int x) (nat-int y) (nat-int z) 
+    rewrite ( int-mul-pull-inv-from-left (nat-int (add y (mul x y))) (nat-int z) )
+    rewrite ( sym ( mul-ass {x} {y} {z} ) )
+    rewrite ( sym ( rdist-mul {y} {mul x y} {z} ) )      
+    = 🐓🥚
+int-mul-ass (neg-int x) (nat-int y) (neg-int z) 
+    rewrite ( int-mul-pull-inv-from-left (nat-int (add y (mul x y))) (neg-int z))
+    rewrite ( int-mul-pull-inv-from-right (neg-int x) (nat-int (mul y (suc z))) )
+    rewrite ( sym ( mul-ass {x} {y} {suc z} ) ) 
+    rewrite ( rdist-mul { y } {mul x y} {suc z} )     
+    = 🐓🥚
+int-mul-ass (neg-int x) (neg-int y) (nat-int z) 
+    rewrite ( int-mul-pull-inv-from-right (neg-int x) (nat-int (add z (mul y z))) ) 
+    rewrite ( int-add-inverse-square-id (nat-int (add (add z (mul y z)) (mul x (add z (mul y z)))) ) )         
+    rewrite ( add-ass {z} {mul y z} {mul x (add z (mul y z))} ) 
+    rewrite ( sym ( rdist-mul {y} {mul x (suc y)} {z} ) ) 
+    rewrite (mul-ass {x} {suc y} {z} ) 
+    = 🐓🥚 
+int-mul-ass (neg-int x) (neg-int y) (neg-int z) 
+    rewrite ( add-ass {z} {(mul y (suc z))} {(mul x (suc (add z (mul y (suc z))))) } ) 
+    rewrite ( sym ( rdist-mul {y} {mul x (suc y)} {suc z} ) ) 
+    rewrite (mul-ass {x} {suc y} {suc z} ) 
+    = 🐓🥚
