@@ -1,7 +1,7 @@
 module StandardConstructions.Integers2 where
 
 open import StandardConstructions.IdentityType
-    using ( definition-equal; 🐓🥚; cong; sym; extensionality)
+    using ( definition-equal; 🐓🥚; cong; sym; trans; extensionality)
 open import StandardConstructions.Maps
     using ( circ ; id )
 open import StandardConstructions.Naturals
@@ -16,6 +16,12 @@ nat-diff-to-int zero zero = nat-int zero
 nat-diff-to-int zero (suc m) = neg-int m
 nat-diff-to-int (suc n) zero = nat-int (suc n)
 nat-diff-to-int (suc n) (suc m) = nat-diff-to-int n m
+
+nat-diff-to-int-zero-is-eq : ( n m : Nat ) -> ( definition-equal ( nat-diff-to-int n m ) (nat-int zero) )
+                                           -> ( definition-equal n m ) 
+nat-diff-to-int-zero-is-eq zero zero pred = 🐓🥚
+nat-diff-to-int-zero-is-eq (suc n) (suc m) pred = ind-step
+    where ind-step = cong suc ( nat-diff-to-int-zero-is-eq n m pred )                                                                        
 
 int-suc : Int -> Int
 int-suc (nat-int x) = nat-int (suc x)
@@ -44,6 +50,12 @@ int-add (nat-int x) (nat-int y) = nat-int (add x y)
 int-add (nat-int x) (neg-int y) = nat-diff-to-int x (suc y)
 int-add (neg-int x) (nat-int y) = nat-diff-to-int y (suc x)
 int-add (neg-int x) (neg-int y) = neg-int (suc (add x y))
+
+int-add-one-suc : ( n : Int ) -> ( definition-equal ( int-add (nat-int (suc zero)) n ) ( int-suc n ) ) 
+int-add-one-suc (nat-int zero) = 🐓🥚
+int-add-one-suc (nat-int (suc x)) = 🐓🥚
+int-add-one-suc (neg-int zero) = 🐓🥚
+int-add-one-suc (neg-int (suc x)) = 🐓🥚
 
 int-add-comm : ( n m : Int ) -> ( definition-equal ( int-add n m ) ( int-add m n ) )
 int-add-comm (nat-int x) (nat-int y)
@@ -185,265 +197,49 @@ add-has-inverses (suc a)
     rewrite ( add-has-inverses a )
     = 🐓🥚
 
+add-nat-inverse-unique : ( a : Nat ) -> ( p : Int ) 
+            -> ( definition-equal ( int-add (nat-int (suc a)) p ) (nat-int zero) ) 
+            -> ( definition-equal p (neg-int a) ) 
+add-nat-inverse-unique zero p pred 
+    rewrite ( int-add-one-suc p )     
+    = res
+    where step = cong int-pred pred
+          iso-inv = sym ( int-predsuc-id p ) 
+          res = trans iso-inv step           
+add-nat-inverse-unique (suc a) (neg-int (suc x)) pred     
+    = cong neg-int (cong suc step)
+    where step = sym ( nat-diff-to-int-zero-is-eq a x pred )    
+
+add-neg-inverse-unique : ( a : Nat ) -> ( p : Int ) 
+                -> ( definition-equal ( int-add (neg-int a) p ) (nat-int zero) ) 
+                -> ( definition-equal p ( nat-int (suc a) ) ) 
+add-neg-inverse-unique zero (nat-int (suc x)) pred     
+    = step-pred
+    where step-pred = cong nat-int ( cong suc ( nat-diff-to-int-zero-is-eq x zero pred ) )
+add-neg-inverse-unique (suc a) (nat-int x) pred 
+    = step-pred                
+    where step-pred = cong nat-int ( nat-diff-to-int-zero-is-eq x (suc (suc a) ) pred )
+
+add-zero-inverse-unique : ( p : Int )
+                -> ( definition-equal ( int-add (nat-int zero) p ) ( nat-int zero) ) 
+                -> ( definition-equal p (nat-int zero ) ) 
+add-zero-inverse-unique (nat-int zero) pred = 🐓🥚                
+
+int-add-inverse : Int -> Int 
+int-add-inverse (nat-int zero) = nat-int zero
+int-add-inverse (nat-int (suc x)) = neg-int x
+int-add-inverse (neg-int x) = nat-int (suc x)
+
+add-inverse-unique : ( p q : Int ) 
+            -> ( definition-equal ( int-add p q ) ( nat-int zero ) ) 
+            -> ( definition-equal q ( int-add-inverse p ) ) 
+add-inverse-unique (nat-int zero) q = add-zero-inverse-unique q
+add-inverse-unique (nat-int (suc x)) q = add-nat-inverse-unique x q
+add-inverse-unique (neg-int x) q = add-neg-inverse-unique x q            
+
 int-add-reduction : ( a b : Nat ) -> ( definition-equal ( int-add ( nat-int (suc a) ) ( neg-int (suc b ) ) )
                                                         ( int-add ( nat-int a ) ( neg-int b ) ) )
 int-add-reduction a b = 🐓🥚
 
 int-mul : Int -> Int -> Int
-int-mul (nat-int zero) z = nat-int zero
-int-mul z (nat-int zero) = nat-int zero
-
-int-mul (nat-int (suc x)) (neg-int zero) = neg-int x
-int-mul (neg-int zero) (nat-int (suc y)) = neg-int y
-
-int-mul (nat-int (suc x)) (nat-int (suc y)) = nat-int (mul (suc x) (suc y) )
-int-mul (neg-int x) (neg-int y) = nat-int (mul (suc x) (suc y) )
-int-mul (nat-int (suc x)) (neg-int (suc y)) = int-suc ( neg-int ( mul (suc x) ( suc (suc y ) ) ) )
-int-mul (neg-int (suc x)) (nat-int (suc y)) = int-suc ( neg-int ( mul (suc (suc x) ) (suc y) ) )
-
-int-mul-zero : ( p : Int ) -> ( definition-equal ( int-mul p (nat-int zero) ) (nat-int zero) )
-int-mul-zero (nat-int zero) = 🐓🥚
-int-mul-zero (nat-int (suc x)) = 🐓🥚
-int-mul-zero (neg-int x) = 🐓🥚
-
-int-mul-one : ( p : Int ) -> ( definition-equal ( int-mul p (nat-int (suc zero) ) ) p )
-int-mul-one (nat-int zero) = 🐓🥚
-int-mul-one (nat-int (suc x))
-   rewrite ( r-one-neutral {x} )
-   = 🐓🥚
-int-mul-one (neg-int zero) = 🐓🥚
-int-mul-one (neg-int (suc x))
-    rewrite (r-one-neutral {x} )
-    = 🐓🥚
-
-int-mul-pos : ( n : Nat ) -> ( definition-equal ( int-mul (neg-int zero) (nat-int (suc n) ) ) ( neg-int n ) )
-int-mul-pos n = 🐓🥚
-
-int-mul-neg : ( n : Nat ) -> ( definition-equal ( int-mul (neg-int zero) (neg-int n ) ) ( nat-int (suc n) ) )
-int-mul-neg zero = 🐓🥚
-int-mul-neg (suc n)
-    rewrite (r-add-zero {n} )
-    = 🐓🥚
-
-int-mul-negneg : ( n m : Nat ) -> ( definition-equal ( int-mul (neg-int n) (neg-int m) ) ( int-mul ( nat-int (suc n ) ) ( nat-int (suc m ) ) ) )
-int-mul-negneg n m = 🐓🥚
-
-int-mul-neg-nat-comm : (n m : Nat ) -> ( definition-equal ( int-mul (nat-int n) (neg-int m ) ) ( int-mul (neg-int m) ( nat-int n ) ) )
-int-mul-neg-nat-comm zero m = 🐓🥚
-int-mul-neg-nat-comm (suc n) zero = 🐓🥚
-int-mul-neg-nat-comm (suc n) (suc m)
-    rewrite ( suc-skip-add {n} {add n (mul m (suc n))} )
-    rewrite ( mul-comm {n} {suc (suc m) } )
-    rewrite ( mul-comm {m} {suc n} )
-    rewrite ( mul-comm {n} {m} )
-    rewrite ( sym ( add-ass {m} {n} {add n (mul m n)} ) )
-    rewrite ( add-comm {m} {n} )
-    rewrite ( add-ass {n} {m} {add n (mul m n) } )
-    rewrite ( sym ( add-ass {m} {n} {mul m n} ) )
-    rewrite ( add-comm {m} {n} )
-    rewrite ( add-ass {n} {m} {mul m n} )
-    = 🐓🥚
-
-int-mul-comm : ( p q : Int ) -> ( definition-equal ( int-mul p q ) ( int-mul q p ) )
-int-mul-comm (nat-int zero) (nat-int zero) = 🐓🥚
-int-mul-comm (nat-int zero) (neg-int y) = 🐓🥚
-int-mul-comm (nat-int (suc x)) (nat-int zero) = 🐓🥚
-int-mul-comm (neg-int x) (nat-int zero) = 🐓🥚
-int-mul-comm (nat-int zero) (nat-int (suc y)) = 🐓🥚
-int-mul-comm (nat-int (suc x)) (neg-int zero) = 🐓🥚
-int-mul-comm (neg-int zero) (nat-int (suc y)) = 🐓🥚
-int-mul-comm (nat-int (suc x)) (nat-int (suc y))
-    rewrite ( mul-comm {suc x} {suc y} )
-    = 🐓🥚
-int-mul-comm (neg-int x) (neg-int y)
-    rewrite ( mul-comm {suc x} {suc y} )
-    = 🐓🥚
-int-mul-comm (nat-int (suc x)) (neg-int (suc y))
-    rewrite ( int-mul-neg-nat-comm (suc x) ( suc y) )
-    = 🐓🥚
-int-mul-comm (neg-int (suc x)) (nat-int (suc y))
-    rewrite ( sym ( int-mul-neg-nat-comm (suc y) ( suc x) ) )
-    = 🐓🥚
-
-nat-int-mul-hom : ( n m : Nat ) -> ( definition-equal ( int-mul ( nat-int n ) ( nat-int m ) )
-                                                      ( nat-int (mul n m ) ) )
-nat-int-mul-hom zero m = 🐓🥚
-nat-int-mul-hom (suc n) zero
-    rewrite ( r-zero-absorbs {suc n} )
-   = 🐓🥚
-nat-int-mul-hom (suc n) (suc m) = 🐓🥚
-
-int-mul-negpos : ( n m : Nat ) -> ( definition-equal ( int-mul ( neg-int n ) ( nat-int (suc m ) ) )
-                                                     ( int-mul ( nat-int (suc n) ) ( neg-int m ) ) )
-int-mul-negpos zero zero = 🐓🥚
-int-mul-negpos zero (suc m)
-    rewrite (int-mul-pos (suc m) )
-    rewrite (r-add-zero {m} )
-    = 🐓🥚
-int-mul-negpos (suc n) zero
-    rewrite ( r-one-neutral {n} )
-    = 🐓🥚
-int-mul-negpos (suc n) (suc m) = 🐓🥚
-
-int-mul-minus-one : ( n : Nat ) -> ( definition-equal ( int-mul ( neg-int zero ) ( nat-int (suc n) ) )
-                                                      ( neg-int n ) )
-int-mul-minus-one zero = 🐓🥚
-int-mul-minus-one (suc n) = 🐓🥚
-
-int-mul-minus-one-t : ( n : Nat ) -> ( definition-equal ( int-mul (neg-int zero) ( neg-int n ) )
-                                                        ( nat-int (suc n) ) )
-int-mul-minus-one-t zero = 🐓🥚
-int-mul-minus-one-t (suc n)
-    rewrite ( r-add-zero {n} )
-    = 🐓🥚
-
-int-mul-minus-one-zero : ( definition-equal ( int-mul (neg-int zero) (nat-int zero) )
-                                            ( nat-int zero ) )
-int-mul-minus-one-zero = 🐓🥚
-
-int-mul-minus-one-minus-one : (definition-equal (int-mul (neg-int zero) ( neg-int zero) ) ( nat-int (suc zero ) ) )
-int-mul-minus-one-minus-one = 🐓🥚
-
-int-mul-suc-nat : ( n m : Nat ) -> ( definition-equal ( int-mul (nat-int (suc n) ) ( nat-int m) )
-                                                  ( int-add (nat-int m) ( int-mul (nat-int n) ( nat-int m) ) ) )
-int-mul-suc-nat zero zero = 🐓🥚
-int-mul-suc-nat zero (suc m) = 🐓🥚
-int-mul-suc-nat (suc n) zero = 🐓🥚
-int-mul-suc-nat (suc n) (suc m) = 🐓🥚
-
-int-mul-suc-neg : ( n m : Nat ) -> ( definition-equal ( int-mul (nat-int (suc n) ) ( neg-int m ) )
-                                                      ( int-add (neg-int m) ( int-mul (nat-int n) (neg-int m) ) ) )
-int-mul-suc-neg zero zero = 🐓🥚
-int-mul-suc-neg (suc n) zero = 🐓🥚
-int-mul-suc-neg zero (suc m)
-    rewrite ( r-add-zero {m} )
-    = 🐓🥚
-int-mul-suc-neg (suc n) (suc m)
-    rewrite ( suc-skip-add {m} {suc (add m (mul n (suc (suc m))))} )
-    = 🐓🥚
-
-int-mul-suc-zero : ( n m : Nat ) -> ( definition-equal ( int-mul (nat-int (suc n) ) ( nat-int zero ) )
-                                                       ( int-add (nat-int zero) ( int-mul (nat-int n ) ( nat-int zero ) ) ) )
-int-mul-suc-zero zero zero = 🐓🥚
-int-mul-suc-zero zero (suc m) = 🐓🥚
-int-mul-suc-zero (suc n) zero = 🐓🥚
-int-mul-suc-zero (suc n) (suc m) = 🐓🥚
-
-int-mul-suc : ( n : Nat ) -> ( p : Int ) -> ( definition-equal ( int-mul (nat-int (suc n) ) p )
-                                                               ( int-add p ( int-mul (nat-int n) p ) ) )
-int-mul-suc n (nat-int x) = int-mul-suc-nat n x
-int-mul-suc n (neg-int x) = int-mul-suc-neg n x
-
-int-mul-nat-ldist : ( n : Nat ) -> ( p q : Int ) -> ( definition-equal ( int-add (int-mul (nat-int n) p) (int-mul (nat-int n) q ) )
-                                                                       ( int-mul (nat-int n) (int-add p q ) ) )
-int-mul-nat-ldist zero p q = 🐓🥚
-int-mul-nat-ldist (suc n) p q
-    rewrite ( int-mul-suc n p )
-    rewrite ( int-mul-suc n q )
-    rewrite ( int-mul-suc n (int-add p q)  )
-    rewrite ( int-add-ass p (int-mul (nat-int n) p) (int-add q (int-mul (nat-int n) q) ) )
-    rewrite ( sym ( int-add-ass (int-mul (nat-int n) p) q (int-mul (nat-int n) q) ) )
-    rewrite ( int-add-comm (int-mul (nat-int n) p) q )
-    rewrite ( int-add-ass q (int-mul (nat-int n) p) (int-mul (nat-int n) q) )
-    rewrite ( sym ( int-add-ass p q (int-add (int-mul (nat-int n) p) (int-mul (nat-int n) q)) ) )
-    rewrite ( int-mul-nat-ldist n p q )
-    = 🐓🥚
-
-int-mul-nat-rdist : ( n : Nat ) -> ( p q : Int ) -> ( definition-equal ( int-add ( int-mul p (nat-int n) ) ( int-mul q (nat-int n) ) ) 
-                                                                       ( int-mul (int-add p q) (nat-int n) ) ) 
-int-mul-nat-rdist n p q 
-    rewrite ( int-mul-comm p (nat-int n) )
-    rewrite ( int-mul-comm q (nat-int n) ) 
-    rewrite ( int-mul-comm (int-add p q ) ( nat-int n) ) 
-    rewrite ( int-mul-nat-ldist n p q ) 
-    = 🐓🥚
-
-swap-nat-diff-to-int : ( n m : Nat ) -> ( definition-equal ( nat-diff-to-int n m ) ( int-mul (neg-int zero) (nat-diff-to-int m n ) ) ) 
-swap-nat-diff-to-int zero zero = 🐓🥚
-swap-nat-diff-to-int zero (suc m) = 🐓🥚
-swap-nat-diff-to-int (suc n) zero 
-    rewrite ( r-add-zero {n} ) 
-    = 🐓🥚
-swap-nat-diff-to-int (suc n) (suc m) = swap-nat-diff-to-int n m
-
-int-mul-neg-suc : ( n : Nat ) -> ( p : Int ) 
-            -> ( definition-equal ( int-mul (neg-int (suc n) ) p ) 
-                                  ( int-add ( int-mul (neg-int zero) p ) ( int-mul ( neg-int n ) p ) ) ) 
-int-mul-neg-suc n (nat-int zero) = 🐓🥚
-int-mul-neg-suc n (neg-int zero) = 🐓🥚 
-int-mul-neg-suc zero (nat-int (suc x)) 
-    rewrite ( r-add-zero {x} ) 
-    rewrite ( suc-skip-add {x} {x} ) 
-    = 🐓🥚
-int-mul-neg-suc (suc n) (nat-int (suc x)) 
-    rewrite (suc-skip-add {x} {add x (suc (add x (mul n (suc x))))} )
-    = 🐓🥚   
-int-mul-neg-suc zero (neg-int (suc x)) 
-    rewrite (r-add-zero {x} ) 
-    = 🐓🥚 
-int-mul-neg-suc (suc n) (neg-int (suc x)) 
-    rewrite (r-add-zero {x} ) 
-    = 🐓🥚
-
-int-mul-negzero-ldist : ( p q : Int ) -> ( definition-equal 
-                                                            ( int-add ( int-mul (neg-int zero) p ) ( int-mul (neg-int zero) q )) 
-                                                            ( int-mul (neg-int zero) (int-add p q) ) 
-                                        ) 
-int-mul-negzero-ldist (nat-int zero) (nat-int zero) = 🐓🥚
-int-mul-negzero-ldist (nat-int zero) (nat-int (suc y)) = 🐓🥚
-int-mul-negzero-ldist (nat-int (suc x)) (nat-int zero) 
-    rewrite ( r-add-zero {x} ) 
-    = 🐓🥚
-int-mul-negzero-ldist (nat-int (suc x)) (nat-int (suc y)) 
-    rewrite ( suc-skip-add {x} {y} ) 
-    = 🐓🥚
-int-mul-negzero-ldist (nat-int zero) (neg-int y) = 🐓🥚
-int-mul-negzero-ldist (nat-int (suc x)) (neg-int y) 
-    rewrite (r-add-zero {y} )     
-    = swap-nat-diff-to-int y x    
-int-mul-negzero-ldist (neg-int zero) (nat-int zero) = 🐓🥚
-int-mul-negzero-ldist (neg-int (suc x)) (nat-int zero) 
-    rewrite (r-add-zero {x} ) 
-    rewrite ( r-add-zero {x} )
-    = 🐓🥚
-int-mul-negzero-ldist (neg-int x) (nat-int (suc y)) 
-    rewrite (r-add-zero {x} ) 
-    = swap-nat-diff-to-int x y
-int-mul-negzero-ldist (neg-int x) (neg-int y) 
-    rewrite (r-add-zero {x} ) 
-    rewrite ( r-add-zero {y} ) 
-    rewrite ( r-add-zero {add x y } ) 
-    rewrite (suc-skip-add {x} {y} ) 
-    = 🐓🥚                                                            
-
-int-mul-neg-ldist : ( n : Nat ) -> ( p q : Int ) 
-            -> ( definition-equal ( int-add (int-mul (neg-int n) p) ( int-mul (neg-int n) q) ) 
-                                  ( int-mul ( neg-int n ) ( int-add p q ) ) ) 
-int-mul-neg-ldist zero p q = int-mul-negzero-ldist p q         
-int-mul-neg-ldist (suc n) p q 
-    rewrite ( int-mul-neg-suc n p ) 
-    rewrite ( int-mul-neg-suc n q ) 
-    rewrite ( int-mul-neg-suc n ( int-add p q ) )    
-    rewrite ( int-add-ass (int-mul (neg-int 0) p) (int-mul (neg-int n) p)  (int-add (int-mul (neg-int 0) q) (int-mul (neg-int n) q)) )
-    rewrite ( sym ( int-add-ass (int-mul (neg-int n) p) (int-mul (neg-int 0) q) (int-mul (neg-int n) q) ) )
-    rewrite ( int-add-comm (int-mul (neg-int n) p) (int-mul (neg-int 0) q) )
-    rewrite ( int-add-ass (int-mul (neg-int 0) q) (int-mul (neg-int n) p) (int-mul (neg-int n) q))
-    rewrite ( sym ( int-add-ass (int-mul (neg-int 0) p) (int-mul (neg-int 0) q) (int-add (int-mul (neg-int n) p) (int-mul (neg-int n) q)) ) )
-    rewrite ( int-mul-negzero-ldist p q ) 
-    rewrite ( int-mul-neg-ldist n p q ) 
-    = 🐓🥚
-
-int-mul-ldist : ( l p q : Int ) -> (definition-equal ( int-add ( int-mul l p ) ( int-mul l q ) ) 
-                                                     ( int-mul l ( int-add p q ) ) ) 
-int-mul-ldist (nat-int x) p q = int-mul-nat-ldist x p q
-int-mul-ldist (neg-int x) p q = int-mul-neg-ldist x p q
-
-int-mul-rdist : ( p q r : Int ) -> ( definition-equal ( int-add ( int-mul p r ) ( int-mul q r ) ) 
-                                                      ( int-mul ( int-add p q ) r ) ) 
-int-mul-rdist p q r 
-    rewrite ( int-mul-comm p r ) 
-    rewrite ( int-mul-comm q r ) 
-    rewrite ( int-mul-comm (int-add p q) r ) 
-    rewrite ( int-mul-ldist r p q ) 
-    = 🐓🥚
-
+int-mul a b = {!   !}
