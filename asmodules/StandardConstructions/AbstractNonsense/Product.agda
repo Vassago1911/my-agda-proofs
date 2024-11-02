@@ -35,5 +35,8 @@ prod-point-r-t a = ( a , pt )
 twist-prod : { A B : Set } -> Product A B -> Product B A 
 twist-prod ( a , b ) = ( b , a ) 
 
+twist-map : { A B Z : Set } -> ( Product A B -> Z ) -> ( Product B A -> Z ) 
+twist-map f (b , a) = f (a , b)
+
 induce-prod-maps : { A Y Z : Set } -> ( A -> Y ) -> ( A -> Z ) ->  ( A -> Product Y Z ) 
 induce-prod-maps f g a = ( f a , g a ) 

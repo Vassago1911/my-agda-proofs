@@ -16,6 +16,11 @@ typey-cong : { a b : Level } { A : Set a } { B : A -> Set b }
       -> ( definition-equal (B x) (B y) )
 typey-cong x y 🐓🥚 = 🐓🥚
 
+cong2 : { A B C : Set } { x y : A } { a b : B } -> ( f : A -> B -> C ) 
+    -> ( definition-equal x y ) -> ( definition-equal a b ) 
+    -> ( definition-equal ( f x a ) ( f y b ) ) 
+cong2 f 🐓🥚 🐓🥚 = 🐓🥚    
+
 refl : { A : Set } { x : A } -> ( definition-equal x x ) 
 refl = 🐓🥚
 
