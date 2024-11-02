@@ -551,9 +551,59 @@ int-mul-add-nat-inj n p q pred
           step4 = int-add-inverse-square-id q 
           res = trans step3 step4 
 
+int-add-inverse-is-sign : ( p : Int ) 
+            -> ( definition-equal
+                    ( int-mul ( neg-int zero ) p ) 
+                    ( int-add-inverse p ) ) 
+int-add-inverse-is-sign (nat-int zero) = 🐓🥚
+int-add-inverse-is-sign (nat-int (suc x)) 
+    rewrite (r-add-zero {x} ) 
+    = 🐓🥚
+int-add-inverse-is-sign (neg-int x) 
+    rewrite ( r-add-zero {x} ) 
+    = 🐓🥚                                        
+
+int-double-sign : ( p : Int ) 
+        -> ( definition-equal 
+                ( int-mul ( neg-int zero ) ( int-mul (neg-int zero) p ) ) 
+                p ) 
+int-double-sign (nat-int zero) = 🐓🥚
+int-double-sign (nat-int (suc x)) 
+    rewrite ( r-add-zero {x} ) 
+    rewrite ( r-add-zero {x} ) 
+    = 🐓🥚
+int-double-sign (neg-int x) 
+    rewrite ( r-add-zero {x} ) 
+    rewrite ( r-add-zero {x} ) 
+    = 🐓🥚
+
+int-double-sign1 : ( p q : Int ) 
+        -> ( definition-equal 
+                ( int-mul p q ) 
+                ( int-mul ( int-add-inverse p ) ( int-add-inverse q ) ) ) 
+int-double-sign1 (nat-int x) (nat-int y) 
+    rewrite ( int-mul-pull-inv-from-left (nat-int x) ( int-add-inverse (nat-int y ) ) ) 
+    rewrite ( int-mul-pull-inv-from-right ( nat-int x ) (nat-int y ) ) 
+    rewrite ( int-add-inverse-square-id (nat-int (mul x y ) ) )
+    = 🐓🥚
+int-double-sign1 (nat-int x) (neg-int y) 
+    rewrite ( int-mul-pull-inv-from-left (nat-int x) (nat-int (suc y) ) ) 
+    = 🐓🥚
+int-double-sign1 (neg-int x) (nat-int y) 
+    rewrite ( int-mul-pull-inv-from-right (nat-int (suc x) ) (nat-int y) ) 
+    = 🐓🥚
+int-double-sign1 (neg-int x) (neg-int y) = 🐓🥚                
+
 int-mul-add-neg-inj : ( n : Nat ) -> ( p q : Int ) 
         -> ( definition-equal 
                     ( int-mul ( neg-int n ) p ) 
                     ( int-mul ( neg-int n ) q ) ) 
-        -> ( definition-equal p q ) 
-int-mul-add-neg-inj n p q pred = {!   !}        
+        -> ( definition-equal p q )       
+int-mul-add-neg-inj n p q pred = res
+    where stepl = sym ( int-double-sign1 (neg-int n) p )          
+          stepr = int-double-sign1 (neg-int n) q       
+          step1 = trans ( trans stepl pred ) stepr 
+          step2 = cong int-add-inverse ( int-mul-add-nat-inj n (int-add-inverse p) ( int-add-inverse q ) step1 )
+          invpup = sym ( int-add-inverse-square-id p )
+          invqup = int-add-inverse-square-id q 
+          res = trans ( trans invpup step2 ) invqup 
