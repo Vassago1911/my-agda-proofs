@@ -381,7 +381,7 @@ nat-mul-no-zero-div : ( n m : Nat )
         -> ( definition-equal ( mul ( suc n ) m ) zero ) 
         -> ( definition-equal m zero ) 
 nat-mul-no-zero-div n m pred = add-pumping m (mul n m) pred        
-                  
+
 mul-suc-inj-at-zero : ( p : Nat ) -> ( n : Nat ) 
             -> ( definition-equal ( mul (suc p) n ) zero ) -> ( definition-equal n zero ) 
 mul-suc-inj-at-zero zero n pred 
@@ -484,3 +484,14 @@ pos-mul3-lass : ( p q r : Pos ) -> ( definition-equal ( pos-mul ( pos-mul p q ) 
 pos-mul3-lass p q r 
    rewrite ( posmul-ass p q r ) 
    = 🐓🥚
+
+add-inj-lemma : ( x y : Nat ) -> ( definition-equal ( add x x ) ( add y y ) ) -> ( definition-equal x y ) 
+add-inj-lemma zero zero pred = 🐓🥚
+add-inj-lemma (suc x) (suc y) pred 
+    rewrite (suc-skip-add {x} {x} ) 
+    rewrite ( suc-skip-add {y} {y} ) 
+    = res
+    where step = suc-inj {(suc (add x x))} {(suc (add y y))} pred 
+          step1 = suc-inj {add x x} {add y y} step 
+          res = cong suc ( add-inj-lemma x y step1 )
+    

@@ -5,13 +5,23 @@ open import StandardConstructions.AbstractNonsense.IdentityType
 open import StandardConstructions.AbstractNonsense.Maps
     using ( circ ; id )
 open import StandardConstructions.Numbers.Naturals
-    using ( Nat; zero; suc; add; mul; r-add-zero; add-comm; suc-skip-add; add-ass; r-one-neutral; 
-            mul-def-reverse; mul-def-reverse1; mul-comm; r-zero-absorbs; nat-suc-splitter; mul-ass;
-            ldist-mul; rdist-mul )
+    using ( Nat; zero; suc; add; mul; r-add-zero; add-comm; suc-skip-add; add-ass; r-one-neutral; add-pumping;    
+            mul-def-reverse; mul-def-reverse1; mul-comm; r-zero-absorbs; nat-suc-splitter; mul-ass; 
+            ldist-mul; rdist-mul; suc-inj  )
 
 data Int : Set where
     nat-int : Nat -> Int
     neg-int : Nat -> Int
+
+nat-int-inj : ( n m : Nat ) -> ( definition-equal ( nat-int n ) ( nat-int m ) )
+                            -> ( definition-equal n m ) 
+nat-int-inj zero zero pred = 🐓🥚
+nat-int-inj (suc n) m 🐓🥚 = 🐓🥚
+
+neg-int-inj : ( n m : Nat ) -> ( definition-equal ( neg-int n ) ( neg-int m )) 
+                            -> ( definition-equal n m ) 
+neg-int-inj zero zero 🐓🥚 = 🐓🥚
+neg-int-inj (suc n) (suc m) 🐓🥚 = 🐓🥚                            
 
 nat-diff-to-int : Nat -> Nat -> Int
 nat-diff-to-int zero zero = nat-int zero
@@ -322,7 +332,8 @@ int-mul-pull-inv-from-left (neg-int (suc x)) (nat-int zero)
     rewrite ( int-add-inverse-square-id (nat-int x) ) 
     = 🐓🥚
 
-int-mul-pull-inv-from-right : ( p q : Int ) -> ( definition-equal ( int-mul p ( int-add-inverse q ) ) ( int-add-inverse ( int-mul p q ) ) ) 
+int-mul-pull-inv-from-right : ( p q : Int ) 
+    -> ( definition-equal ( int-mul p ( int-add-inverse q ) ) ( int-add-inverse ( int-mul p q ) ) ) 
 int-mul-pull-inv-from-right p q 
     rewrite ( int-mul-comm p (int-add-inverse q) ) 
     rewrite ( int-mul-pull-inv-from-left q p ) 
@@ -476,3 +487,73 @@ int-mul-rdist r p q
     rewrite ( int-mul-ldist r p q ) 
     = 🐓🥚                                                    
 
+int-mul-no-nat-zero-div : ( n : Nat ) -> ( p : Int ) 
+        -> ( definition-equal 
+                ( int-mul ( nat-int (suc n) ) p ) 
+                ( nat-int zero ) ) 
+        -> ( definition-equal 
+                p (nat-int zero) ) 
+int-mul-no-nat-zero-div zero p pred 
+    rewrite ( int-mul-one-neutral p ) 
+    = pred
+int-mul-no-nat-zero-div (suc n) (nat-int zero) pred = 🐓🥚
+
+int-mul-no-neg-zero-div : ( n : Nat ) -> ( p : Int ) 
+        -> ( definition-equal 
+                ( int-mul ( neg-int n ) p ) 
+                ( nat-int zero ) ) 
+        -> ( definition-equal 
+                p ( nat-int zero ) ) 
+int-mul-no-neg-zero-div zero (nat-int zero) pred = 🐓🥚
+int-mul-no-neg-zero-div (suc n) (nat-int zero) pred 
+    rewrite ( r-zero-absorbs {n} ) 
+    = 🐓🥚
+
+int-mul-add-inverses : ( n : Nat ) -> ( p q : Int ) 
+        -> ( definition-equal 
+                ( int-add ( int-mul (nat-int (suc n)) p ) ( int-mul (nat-int (suc n)) q ) ) 
+                ( nat-int zero ) ) 
+        -> ( definition-equal 
+                p ( int-add-inverse q ) ) 
+int-mul-add-inverses zero p q pred 
+    rewrite ( int-mul-one-neutral p ) 
+    rewrite ( int-mul-one-neutral q ) 
+    = res
+    where step = sym ( cong int-add-inverse ( add-inverse-unique p q pred ) )
+          pinvup = sym ( int-add-inverse-square-id p ) 
+          res = trans pinvup step           
+int-mul-add-inverses (suc n) p q pred = res
+    where ldist-step = int-mul-ldist (nat-int (suc (suc n))) p q 
+          step = trans (sym ldist-step) pred 
+          step2 = int-mul-no-nat-zero-div (suc n) (int-add p q) step 
+          step3 = sym ( cong int-add-inverse ( add-inverse-unique p q step2 ) )
+          pinvup = sym ( int-add-inverse-square-id p ) 
+          res = trans pinvup step3
+
+int-add-inv-cong : ( p q : Int ) 
+        -> ( definition-equal p q ) 
+        -> ( definition-equal ( int-add p ( int-add-inverse q ) ) ( nat-int zero ) ) 
+int-add-inv-cong (nat-int zero) q 🐓🥚 = 🐓🥚
+int-add-inv-cong (nat-int (suc x)) q 🐓🥚 = nat-diff-eq-is-zero x
+int-add-inv-cong (neg-int x) q 🐓🥚 = nat-diff-eq-is-zero x
+
+int-mul-add-nat-inj : ( n : Nat ) -> ( p q : Int ) 
+        -> ( definition-equal 
+                    ( int-mul (nat-int (suc n) ) p ) 
+                    ( int-mul (nat-int (suc n) ) q ) ) 
+        -> ( definition-equal p q ) 
+int-mul-add-nat-inj n p q pred     
+    = res
+    where step = sym ( int-add-inv-cong ( int-mul (nat-int (suc n) ) p ) ( int-mul (nat-int (suc n) ) q ) pred )
+          step1 = cong ( \ z -> (int-add (int-mul (nat-int (suc n)) p) z ) ) ( sym ( int-mul-pull-inv-from-right (nat-int (suc n)) q ) )
+          step2 = sym ( trans step step1 ) 
+          step3 = int-mul-add-inverses n p (int-add-inverse q) step2 
+          step4 = int-add-inverse-square-id q 
+          res = trans step3 step4 
+
+int-mul-add-neg-inj : ( n : Nat ) -> ( p q : Int ) 
+        -> ( definition-equal 
+                    ( int-mul ( neg-int n ) p ) 
+                    ( int-mul ( neg-int n ) q ) ) 
+        -> ( definition-equal p q ) 
+int-mul-add-neg-inj n p q pred = {!   !}        
