@@ -7,7 +7,7 @@ data Nat : Set where
     zero : Nat 
     suc : Nat -> Nat 
 
-{-#  BUILTIN NATURAL Nat  #-}
+ -- {-#  BUILTIN NATURAL Nat  #-}
 
 suc-zero-is-pig : ( n : Nat ) -> ( definition-equal (suc n) zero ) -> 🐷🛸
 suc-zero-is-pig n = \ ()
