@@ -52,7 +52,13 @@ add-c-inj (suc c) n m pred
     = ind-step
     where step = suc-inj {add c n} {add c m} pred 
           ind-step = add-c-inj c n m step 
-    
+
+nat-add-no-inverses : ( n m : Nat ) 
+        -> ( definition-equal ( add n m ) n ) 
+        -> ( definition-equal m zero ) 
+nat-add-no-inverses zero m pred = pred
+nat-add-no-inverses (suc n) m pred = nat-add-no-inverses n m (suc-inj {add n m} {n} pred)
+
 l-add-zero : { n : Nat } -> ( definition-equal ( add zero n ) n ) 
 l-add-zero { n = n } = 🐓🥚
 
@@ -376,6 +382,8 @@ nat-add-mul-lemma n m = 🐓🥚
 
 add-pumping : ( n m : Nat ) ->  ( definition-equal ( add n m ) zero ) -> ( definition-equal n zero ) 
 add-pumping zero m pred = 🐓🥚
+
+
 
 nat-mul-no-zero-div : ( n m : Nat ) 
         -> ( definition-equal ( mul ( suc n ) m ) zero ) 
